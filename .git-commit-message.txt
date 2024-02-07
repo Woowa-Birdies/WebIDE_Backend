@@ -1,0 +1,40 @@
+# <type>: <subject>
+# Write no more than 50 Characters
+# Ex) feat: 로그인 기능 추가
+
+
+# (optional) Body
+# Write no more than 72 Characters
+
+
+# (optional) Footer
+# Write Issue Tracker Number or URL
+# <issue tracker>: #<issue num>
+# Ex) Resolves: #123
+
+# ---- TYPE CAN BE ----
+#   feat      : 새로운 기능 추가
+#   fix       : 버그/로직 수정
+#   refactor  : 코드 리팩토링
+#   style     : 코드 의미에 영향을 주지 않는 변경
+#   docs      : 문서 수정
+#   test      : 테스트 코드 추가/수정/삭제
+#   chore     : 빌드 또는 패키지 매니저 수정
+#   design    : CSS 등 사용자 UI 디자인 변경
+#   comment   : 주석 추가/수정/삭제
+#   rename    : 파일/폴더 이름 변경
+#   remove    : 파일/폴더 삭제
+#   etc       : 기타
+# --- ISSUE TRACKER ---
+#  Fixes      : 이슈 수정 중 (아직 미해결)
+#  Resolves   : 이슈 해결
+#  Ref        : 참조 이슈
+#  Related to : 관련 이슈
+# ---------------------
+#  Subject 대문자로 시작
+#  Subject 명령문으로
+#  Subject 끝에 마침표(.) 금지
+#  제목과 본문을 한 줄 띄워 분리하기
+#  본문은 "어떻게" 보다 "무엇을", "왜"를 설명
+#  본문에 여러 줄의 메시지 작성 시 "-"로 구분
+# ---------------------
