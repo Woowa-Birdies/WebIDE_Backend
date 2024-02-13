@@ -1,5 +1,6 @@
 package goorm.woowa.webide.member.data;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -7,16 +8,18 @@ import org.springframework.security.core.userdetails.User;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 public class MemberDto extends User {
 
     private String email, pwd, nickname;
     private List<String> roleNames = new ArrayList<>();
 
 
-    public MemberDto(String username, String password, String nickname, List<String> roleNames) {
+    public MemberDto(String email, String pwd, String nickname, List<String> roleNames) {
         super(
-                username,
-                password,
+                email,
+                pwd,
                 roleNames.stream().map(str -> new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList())
 
         );
@@ -34,6 +37,9 @@ public class MemberDto extends User {
         dataMap.put("pwd", pwd);
         dataMap.put("nickname", nickname);
         dataMap.put("roleNames", roleNames);
+
+        log.info("get claims={}", dataMap);
+
 
         return dataMap;
     }

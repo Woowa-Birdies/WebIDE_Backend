@@ -15,14 +15,14 @@ import static java.nio.charset.StandardCharsets.*;
 @Slf4j
 public class JWTUtil {
 
-    public static String key = "123456789012345678901234567890";
+    public static String key = "1234567890123456789012345678901234567890";
 
     public static String generateToken(Map<String, Object> valueMap, int min) {
 
         SecretKey key = null;
 
         try {
-            key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes(UTF_8));
+            key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -39,7 +39,7 @@ public class JWTUtil {
     public static Map<String, Object> validateToken(String token) {
         Map<String, Object> claim = null;
         try{
-            SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes(UTF_8));
+            SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
             claim = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()

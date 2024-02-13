@@ -18,7 +18,7 @@ public class SocialController {
     private final MemberService memberService;
 
     // /api -> jwt 필터 안 고치게 하려고 붙임
-    @GetMapping("/api/oauth/kakao")
+    @GetMapping("/api/member/kakao")
     public Map<String, Object> getMemberFromKakao(String accessToken) {
         log.info("accessToken from kakao={}", accessToken);
 
