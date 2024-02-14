@@ -26,7 +26,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/member/kakao")) {
+        if (path.startsWith("/")) {
             return true;
         }
 
@@ -42,6 +42,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             //Bearer accestoken...
             String accessToken = authHeaderStr.substring(7);
             Map<String, Object> claims = JWTUtil.validateToken(accessToken);
+
+            log.info("request={}", request.getRequestURI());
+            log.info("claims={}", claims);
 
             String email = (String) claims.get("email");
             String pw = (String) claims.get("pw");
@@ -72,7 +75,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             writer.close();
         }
 
-        filterChain.doFilter(request, response);
 
     }
 }
