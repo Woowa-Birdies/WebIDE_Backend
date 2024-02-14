@@ -43,6 +43,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String accessToken = authHeaderStr.substring(7);
             Map<String, Object> claims = JWTUtil.validateToken(accessToken);
 
+            log.info("request={}", request.getRequestURI());
+            log.info("claims={}", claims);
+
             String email = (String) claims.get("email");
             String pw = (String) claims.get("pw");
             String nickname = (String) claims.get("nickname");
@@ -72,7 +75,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             writer.close();
         }
 
-        filterChain.doFilter(request, response);
 
     }
 }

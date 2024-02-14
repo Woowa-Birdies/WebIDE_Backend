@@ -1,7 +1,6 @@
 package goorm.woowa.webide.member;
 
-import goorm.woowa.webide.member.data.Member;
-import goorm.woowa.webide.member.data.MemberDto;
+import goorm.woowa.webide.member.data.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static goorm.woowa.webide.member.data.MemberRole.USER;
@@ -33,26 +33,56 @@ public class MemberService {
         String nickname = getEmailFromKakaoAccessToken(accessToken);
 
         // 기존에 DB에 회원 정보가 있는 경우 / 없는 경우
-        Optional<Member> resultMember = memberRepository.findByEmailAndNickname("kakao" + nickname, nickname);
+        Optional<Member> resultMember = memberRepository.findByEmailAndNickname(nickname, nickname);
 
         if (resultMember.isPresent()) {
             //return
             return MemberDto.from(resultMember.get());
         }
 
-        Member socialMember = makeMember(nickname);
+        Member socialMember = makeMemberFromKakao(nickname);
         memberRepository.save(socialMember);
 
         return MemberDto.from(socialMember);
     }
 
-    private Member makeMember(String nickname) {
+    public MemberDto getGoogleMember(String accessToken, String scope) {
+        Map<String, String> memberInfoFromGoogle = getMemberInfoFromGoogleAccessToken(accessToken, scope);
+
+        // 1. db에 회원 정보 있는지 확인
+        Optional<Member> byEmail = memberRepository.findByEmail(memberInfoFromGoogle.get("email"));
+
+        // 2. 회원 정보 있으면 memberDTO 반환
+        if (byEmail.isPresent()) {
+            return MemberDto.from(byEmail.get());
+        }
+
+        // 3. 없으면 회원 저장
+        Member member = makeMemberFromGoogle(memberInfoFromGoogle.get("email"), memberInfoFromGoogle.get("name"));
+        memberRepository.save(member);
+
+        return MemberDto.from(member);
+    }
+
+    private Member makeMemberFromKakao(String nickname) {
         String tempPassword = makeTempPassword();
         log.info("tempPassword={}", tempPassword);
 
         Member member = Member.builder()
-                .email("kakao" + nickname)
+                .email(nickname)
                 .pwd(passwordEncoder.encode(tempPassword))
+                .nickname(nickname)
+                .build();
+
+        member.addRole(USER);
+
+        return member;
+    }
+
+    private Member makeMemberFromGoogle(String email, String nickname) {
+        Member member = Member.builder()
+                .email(email)
+                .pwd(passwordEncoder.encode(makeTempPassword()))
                 .nickname(nickname)
                 .build();
 
@@ -90,6 +120,40 @@ public class MemberService {
         log.info("bodyMap={}", bodyMap);
 
         return nickname;
+    }
+
+    private Map<String, String> getMemberInfoFromGoogleAccessToken(String accessToken, String scope) {
+        String googleGetUserURL = "https://www.googleapis.com/userinfo/v2/me";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(googleGetUserURL).build();
+
+        ResponseEntity<LinkedHashMap> response =
+                restTemplate.exchange(uriBuilder.toUri(), HttpMethod.GET, entity, LinkedHashMap.class);
+
+        log.info("member info from google={}", response.getBody());
+
+        LinkedHashMap<String, String> bodyMap = response.getBody();
+
+        log.info("bodyMap={}", bodyMap.get("email"));
+
+        return bodyMap;
+    }
+
+    public void updateMember(MemberUpdateDto memberUpdateDto) {
+        Optional<Member> result = memberRepository.findByEmail(memberUpdateDto.getEmail());
+        Member member = result.orElseThrow();
+        member.setEmail(memberUpdateDto.getEmail());
+        member.setNickname(memberUpdateDto.getNickname());
+
+        memberRepository.save(member);
     }
 
     private String makeTempPassword() {
