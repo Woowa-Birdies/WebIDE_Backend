@@ -42,7 +42,7 @@ public class ApiRefreshController {
         String newAccessToken = JWTUtil.generateToken(claims, 30);
         String newRefreshToken = checkTime((Integer) claims.get("exp")) ? JWTUtil.generateToken(claims, 60 * 24) : refreshToken;
 
-        return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
+        return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
 
     }
 

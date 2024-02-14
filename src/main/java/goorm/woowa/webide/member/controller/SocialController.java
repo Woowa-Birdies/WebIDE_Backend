@@ -1,13 +1,12 @@
 package goorm.woowa.webide.member.controller;
 
 import goorm.woowa.webide.member.MemberService;
-import goorm.woowa.webide.member.data.MemberDto;
-import goorm.woowa.webide.member.data.MemberGoogleLoginReqeust;
-import goorm.woowa.webide.member.data.MemberInfoResponse;
-import goorm.woowa.webide.member.data.MemberUpdateDto;
+import goorm.woowa.webide.member.data.*;
 import goorm.woowa.webide.member.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -30,39 +29,49 @@ public class SocialController {
 
         Map<String, Object> claims = member.getClaims();
 
-        String jwtAccessToken = JWTUtil.generateToken(claims, 10);
-        String jwtRefreshToken = JWTUtil.generateToken(claims, 60 * 24);
-
-        claims.put("accessToken", jwtAccessToken);
-        claims.put("refreshToken", jwtRefreshToken);
+        claims.put("accessToken", JWTUtil.generateToken(claims, 10));
+        claims.put("refreshToken", JWTUtil.generateToken(claims, 60 * 24));
 
         return claims;
     }
 
     @PostMapping("/google")
-    public Map<String, Object> getMemberFormGoogle(@RequestBody MemberGoogleLoginReqeust memberLoginReqeust) {
-        log.info("google login request={}", memberLoginReqeust);
+    public Map<String, Object> getMemberFormGoogle(@RequestBody MemberGoogleLoginReqeust memberLoginRequest) {
+        log.info("google login request={}", memberLoginRequest);
 
-        MemberDto googleMember = memberService.getGoogleMember(memberLoginReqeust.getAccessToken(), memberLoginReqeust.getScope());
+        MemberDto googleMember = memberService.getGoogleMember(memberLoginRequest.getAccessToken(), memberLoginRequest.getScope());
         log.info("googleMember at controller ={}", googleMember);
 
         Map<String, Object> claims = googleMember.getClaims();
 
-        String jwtAccessToken = JWTUtil.generateToken(claims, 10);
-        String jwtRefreshToken = JWTUtil.generateToken(claims, 60 * 24);
-
-        claims.put("accessToken", jwtAccessToken);
-        claims.put("refreshToken", jwtRefreshToken);
+        claims.put("accessToken", JWTUtil.generateToken(claims, 10));
+        claims.put("refreshToken", JWTUtil.generateToken(claims, 60 * 24));
 
         return claims;
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public Map<String, Object> update(@RequestBody MemberUpdateDto memberUpdateDto) {
         log.info("update member={}", memberUpdateDto);
+        log.info("update member atk={}", memberUpdateDto.getAccessToken());
+        log.info("update member rtk={}", memberUpdateDto.getRefreshToken());
 
-        memberService.updateMember(memberUpdateDto);
+        MemberDto member = memberService.updateMember(memberUpdateDto);
 
-        return Map.of("result", "modified");
+        Map<String, Object> claims = member.getClaims();
+        claims.put("accessToken", JWTUtil.generateToken(claims, 10));
+        claims.put("refreshToken", JWTUtil.generateToken(claims, 60 * 24));
+
+        log.info("after update. member atk={}", claims.get("accessToken"));
+        log.info("after update. member rtk={}", claims.get("refreshToken"));
+
+        return claims;
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Void> delete(String email) {
+        log.info("hellolhkldjfkljskdlfj={}", email);
+        memberService.delete(email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

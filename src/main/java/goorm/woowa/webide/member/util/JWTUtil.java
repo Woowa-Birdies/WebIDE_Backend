@@ -37,6 +37,7 @@ public class JWTUtil {
     }
 
     public static Map<String, Object> validateToken(String token) {
+        log.info("token at jwtutil validateToken={}", token);
         Map<String, Object> claim = null;
         try{
             SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));

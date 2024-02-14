@@ -64,6 +64,23 @@ public class MemberService {
         return MemberDto.from(member);
     }
 
+    public MemberDto updateMember(MemberUpdateDto memberUpdateDto) {
+        Optional<Member> result = memberRepository.findByEmail(memberUpdateDto.getEmail());
+        Member member = result.orElseThrow();
+        member.setEmail(memberUpdateDto.getEmail());
+        member.setNickname(memberUpdateDto.getNickname());
+
+        // 새로운 jwt 토큰 만들어 보내기
+
+        return MemberDto.from(member);
+    }
+
+    public String delete(String email) {
+        Optional<Member> foundMember = memberRepository.findByEmail(email);
+        memberRepository.delete(foundMember.get());
+        return "deleted";
+    }
+
     private Member makeMemberFromKakao(String nickname) {
         String tempPassword = makeTempPassword();
         log.info("tempPassword={}", tempPassword);
@@ -145,15 +162,6 @@ public class MemberService {
         log.info("bodyMap={}", bodyMap.get("email"));
 
         return bodyMap;
-    }
-
-    public void updateMember(MemberUpdateDto memberUpdateDto) {
-        Optional<Member> result = memberRepository.findByEmail(memberUpdateDto.getEmail());
-        Member member = result.orElseThrow();
-        member.setEmail(memberUpdateDto.getEmail());
-        member.setNickname(memberUpdateDto.getNickname());
-
-        memberRepository.save(member);
     }
 
     private String makeTempPassword() {
