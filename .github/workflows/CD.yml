@@ -50,6 +50,11 @@ jobs:
       - name: Copy script
         run: cp ./*.sh ./deploy
 
+      # S3에 업로드
+      - name: Upload to S3
+        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+
+
       # Deploy
       - name: Deploy
         run: |
@@ -62,6 +67,4 @@ jobs:
           --region ap-northeast-2 \
 
       
-      # S3에 업로드
-      - name: Upload to S3
-        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+    
