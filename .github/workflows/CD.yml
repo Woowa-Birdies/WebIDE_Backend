@@ -58,7 +58,7 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name webide-deploy-group \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=webide-project,bundleType=zip,key=$GITHUB_SHA.zip \
+          --s3-location bucket=webide-project,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip \
           --region ap-northeast-2 \
 
       
