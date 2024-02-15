@@ -14,4 +14,6 @@ public class MemberUpdateDto {
     private String email;
     private String pwd;
     private String nickname;
+    private String accessToken;
+    private String refreshToken;
 }
