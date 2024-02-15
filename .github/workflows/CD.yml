@@ -50,11 +50,11 @@ jobs:
       - name: Copy script
         run: cp ./*.sh ./deploy
 
-        # Deploy
+      # Deploy
       - name: Deploy
         run: |
           aws deploy create-deployment \
-          --application-name webide-codedeploy-app \
+          --application-name webide-project \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name webide-deploy-group \
           --file-exists-behavior OVERWRITE \
