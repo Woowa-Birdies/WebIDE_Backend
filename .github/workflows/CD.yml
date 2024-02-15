@@ -49,6 +49,18 @@ jobs:
       # script files 복사
       - name: Copy script
         run: cp ./*.sh ./deploy
+
+        # Deploy
+      - name: Deploy
+        run: |
+          aws deploy create-deployment \
+          --application-name webide-codedeploy-app \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name webide-deploy-group \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=webide-project,bundleType=zip,key=$GITHUB_SHA.zip \
+          --region ap-northeast-2 \
+
       
       # S3에 업로드
       - name: Upload to S3
