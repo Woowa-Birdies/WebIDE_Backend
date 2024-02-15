@@ -1,6 +1,7 @@
 package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import goorm.woowa.webide.common.TestSecurityConfig;
 import goorm.woowa.webide.project.domain.Project;
 import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestSecurityConfig.class)
 @TestPropertySource("classpath:test-application.yml")
 class ProjectTest {
     @Autowired
