@@ -26,11 +26,11 @@ public class Chat {
     private String messageId;
 
     private Long roomId;
-
+    // message 내용, 글자수 제한은 웹 소켓 컨테이너를 통해 설정
     private String message;
-
+    // 채팅 작성자
     private String sender;
-
+    // 채팅 읽은 유저 목록
     private Map<String, Boolean> readUser;
 
     @CreatedDate
