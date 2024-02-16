@@ -16,13 +16,14 @@ public class Room extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
-
+    // 프로젝트 채팅방 1:1
     @OneToOne(fetch = FetchType.LAZY)
     private Project project;
 
+    // admin (채팅 담당자)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member adminUser;
-
+    // 공지 기능을 위한 chat collection messageId
     private String noticeId;
 
     @Builder
