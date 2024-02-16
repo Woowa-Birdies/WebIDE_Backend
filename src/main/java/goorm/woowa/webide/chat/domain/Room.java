@@ -17,10 +17,10 @@ public class Room extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
 
-    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Project project;
 
-    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member adminUser;
 
     private String noticeId;
