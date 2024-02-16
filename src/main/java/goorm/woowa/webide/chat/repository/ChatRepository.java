@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRepository extends MongoRepository<Chat, String> {
-    Slice<Chat> findByRoomId(Long projectId, Pageable pageable);
+    Slice<Chat> findByRoomId(Long roomId, Pageable pageable);
 }
