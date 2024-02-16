@@ -1,12 +1,17 @@
 package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import goorm.woowa.webide.candidate.domain.Candidate;
+import goorm.woowa.webide.candidate.repository.CandidateRepository;
 import goorm.woowa.webide.common.TestSecurityConfig;
-import goorm.woowa.webide.project.domain.Project;
-import goorm.woowa.webide.project.domain.ProjectLanguage;
+import goorm.woowa.webide.member.MemberRepository;
+import goorm.woowa.webide.member.data.Member;
+import goorm.woowa.webide.member.data.MemberRole;
+import goorm.woowa.webide.problem.domain.Problem;
+import goorm.woowa.webide.problem.repository.ProblemRepository;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
-import goorm.woowa.webide.project.service.ProjectService;
+import goorm.woowa.webide.project.service.ProjectQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,7 +38,13 @@ class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private ProjectService projectService;
+    private ProjectQueryService projectQueryService;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private ProblemRepository problemRepository;
+    @Autowired
+    private CandidateRepository candidateRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,12 +53,31 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_상세조회할_수_있다() throws Exception {
         //given
-        Project createdProject = projectService.create(ProjectCreate.builder()
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .roleList(List.of(MemberRole.USER))
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .outputValue("output")
+                .inputValue("input")
+                .parameter("parameter")
+                .build());
+        Candidate candidate = candidateRepository.save(Candidate.builder()
+                .candidateName("candidate")
+                .birthDate(LocalDateTime.MIN)
+                .build());
+
+        Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
                 .build());
         //when
         //then
-        mockMvc.perform(get("/projects/{id}", createdProject.getId()).with(csrf()))
+        mockMvc.perform(get("/projects/{id}", projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name").value("CreateTest"));
@@ -56,8 +89,23 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_만들_수_있다() throws Exception {
         //given
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .roleList(List.of(MemberRole.USER))
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .outputValue("output")
+                .inputValue("input")
+                .parameter("parameter")
+                .build());
+
         ProjectCreate createTest = ProjectCreate.builder()
                 .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
                 .build();
 
         //when
@@ -65,9 +113,7 @@ class ProjectTest {
         mockMvc.perform(post("/projects").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createTest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.name").value("CreateTest"));
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -75,24 +121,34 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_수정할_수_있다() throws Exception {
         //given
-        Project createdProject = projectService.create(ProjectCreate.builder()
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .outputValue("output")
+                .inputValue("input")
+                .parameter("parameter")
+                .build());
+
+        Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
                 .build());
 
         ProjectUpdate updateTest = ProjectUpdate.builder()
-                .id(createdProject.getId())
+                .id(projectId)
                 .name("UpdateTest")
-                .language(ProjectLanguage.JAVA)
                 .build();
         //when
         //then
         mockMvc.perform(patch("/projects").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateTest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.name").value("UpdateTest"))
-                .andExpect(jsonPath("$.language").value("JAVA"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -100,13 +156,27 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_삭제할_수_있다() throws Exception {
         //given
-        Project createdProject = projectService.create(ProjectCreate.builder()
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .outputValue("output")
+                .inputValue("input")
+                .parameter("parameter")
+                .build());
+
+        Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
                 .build());
         //when
         //then
-        mockMvc.perform(delete("/projects/{id}", createdProject.getId()).with(csrf()))
+        mockMvc.perform(delete("/projects/{id}", projectId).with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(createdProject.getId().toString()));
+                .andExpect(content().string(projectId.toString()));
     }
 }

@@ -1,6 +1,5 @@
 package goorm.woowa.webide.project.domain.dto;
 
-import goorm.woowa.webide.project.domain.ProjectLanguage;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -14,13 +13,10 @@ public class ProjectUpdate {
     private Long id;
     @NotEmpty
     private String name;
-    @NotNull
-    private ProjectLanguage language;
 
     @Builder
-    public ProjectUpdate(Long id, String name, ProjectLanguage language) {
+    public ProjectUpdate(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.language = language;
     }
 }

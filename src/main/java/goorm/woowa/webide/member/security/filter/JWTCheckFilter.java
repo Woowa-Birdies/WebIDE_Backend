@@ -1,20 +1,16 @@
 package goorm.woowa.webide.member.security.filter;
 
 import com.google.gson.Gson;
-import goorm.woowa.webide.member.data.MemberDto;
 import goorm.woowa.webide.member.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
 
 // 모든 요청에 동작하는 필터
@@ -31,6 +27,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         }
 
         return false;
+
     }
 
     @Override
