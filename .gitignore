@@ -40,4 +40,7 @@ out/
 src/main/generated/
 
 ### application yaml ###
+application-dev.yml
+application-test.yml
+application-prod.yml
 /src/main/resources/application.yml

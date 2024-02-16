@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Builder
 @AllArgsConstructor
@@ -24,11 +25,13 @@ public class Chat {
     @Field(value = "_id", targetType = FieldType.OBJECT_ID)
     private String messageId;
 
-    private Long projectId;
-
-    private ParticipantType paticipantType; // todo : 추후 role 타입 반영
+    private Long roomId;
 
     private String message;
+
+    private String sender;
+
+    private Map<String, Boolean> readUser;
 
     @CreatedDate
     private LocalDateTime createAt;
