@@ -86,3 +86,7 @@ sourceSets {
 clean.doLast {
 	file(generated).deleteDir()
 }
+
+  jar {
+      enabled = false
+  }
