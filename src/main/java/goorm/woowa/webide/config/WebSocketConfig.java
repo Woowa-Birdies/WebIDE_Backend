@@ -1,4 +1,4 @@
-package goorm.woowa.webide.chat.config;
+package goorm.woowa.webide.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package goorm.woowa.webide.chat.config;
+package goorm.woowa.webide.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
