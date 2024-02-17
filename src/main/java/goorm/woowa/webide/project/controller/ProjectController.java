@@ -1,8 +1,10 @@
 package goorm.woowa.webide.project.controller;
 
+import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.dto.ProjectDetails;
+import goorm.woowa.webide.project.repository.dto.ProjectListResponse;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
 import jakarta.validation.Valid;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
@@ -18,7 +22,12 @@ public class ProjectController {
     private final ProjectQueryService projectQueryService;
     private final ProjectReadService projectReadService;
 
-    @GetMapping("/projects/{id}")
+    @GetMapping("/projects/{memberId}")
+    public ResponseEntity<List<ProjectListResponse>> getList(@PathVariable("memberId") Long memberId) {
+        return ResponseEntity.ok(projectReadService.getListByMemberId(memberId));
+    }
+
+    @GetMapping("/ide/{id}")
     public ResponseEntity<ProjectDetails> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(projectReadService.getByIdDetails(id));
     }
@@ -39,4 +48,9 @@ public class ProjectController {
         return ResponseEntity.ok(projectQueryService.delete(id));
     }
 
+    @PatchMapping("/projects/{id}/languages")
+    public ResponseEntity<Long> registerLanguage(@PathVariable("id") Long id,
+                                                 @RequestBody LanguageUpdate languageUpdate) {
+        return ResponseEntity.ok(projectQueryService.registerLanguage(id, languageUpdate));
+    }
 }

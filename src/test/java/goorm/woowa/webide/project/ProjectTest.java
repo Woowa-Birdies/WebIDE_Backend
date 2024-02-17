@@ -1,8 +1,6 @@
 package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import goorm.woowa.webide.candidate.domain.Candidate;
-import goorm.woowa.webide.candidate.repository.CandidateRepository;
 import goorm.woowa.webide.common.TestSecurityConfig;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
@@ -23,7 +21,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -43,8 +40,6 @@ class ProjectTest {
     private MemberRepository memberRepository;
     @Autowired
     private ProblemRepository problemRepository;
-    @Autowired
-    private CandidateRepository candidateRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -65,10 +60,7 @@ class ProjectTest {
                 .inputValue("input")
                 .parameter("parameter")
                 .build());
-        Candidate candidate = candidateRepository.save(Candidate.builder()
-                .candidateName("candidate")
-                .birthDate(LocalDateTime.MIN)
-                .build());
+
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
@@ -77,10 +69,15 @@ class ProjectTest {
                 .build());
         //when
         //then
-        mockMvc.perform(get("/projects/{id}", projectId).with(csrf()))
+        mockMvc.perform(get("/ide/{id}", projectId).with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.name").value("CreateTest"));
+                .andExpect(jsonPath("$.projectId").isNumber())
+                .andExpect(jsonPath("$.projectName").value("CreateTest"))
+                .andExpect(jsonPath("$.title").value("title"))
+                .andExpect(jsonPath("$.outputValue").value("output"))
+                .andExpect(jsonPath("$.inputValue").value("input"))
+                .andExpect(jsonPath("$.memberName").value("nickname"))
+                .andExpect(jsonPath("$.parameter").value("parameter"));
     }
 
 

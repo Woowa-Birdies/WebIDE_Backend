@@ -63,8 +63,11 @@ public class Project extends BaseTimeEntity {
         this.name = projectUpdate.getName();
     }
 
-    public void registerCandidate(Candidate candidate, ProjectLanguage language) {
+    public void registerCandidate(Candidate candidate) {
         this.candidateId = candidate.getId();
+    }
+
+    public void registerLanguage(ProjectLanguage language) {
         this.language = language;
     }
 }

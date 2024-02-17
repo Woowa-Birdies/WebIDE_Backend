@@ -23,4 +23,11 @@ public class Candidate extends BaseTimeEntity {
 
     @Column
     private LocalDateTime birthDate;
+
+    public static Candidate toEntity(CandidateCreate candidateCreate) {
+        return Candidate.builder()
+                .candidateName(candidateCreate.getCandidateName())
+                .birthDate(candidateCreate.getBirthDate())
+                .build();
+    }
 }

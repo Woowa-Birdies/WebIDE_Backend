@@ -12,5 +12,4 @@ public class ProblemResponse {
     private String parameter;
     private String inputValue;
     private String outputValue;
-    
 }
