@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -18,11 +19,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // custom shake handler
 
     @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(1024 * 1024);
+    }
+
+    @Override
     public void configureMessageBroker(MessageBrokerRegistry registry){
-        // /sub에게 모두 전달
+        // `/sub`에게 모두 전달
         registry.enableSimpleBroker("/queue");
 
-        // /pub 시작 메시지가 message-handling methods로 라우팅
+        // `/pub` 시작 메시지가 message-handling methods로 라우팅
         registry.setApplicationDestinationPrefixes("/pub");
 
     }
@@ -32,13 +38,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .addInterceptors()
                 .setAllowedOrigins("*");
-        //todo: errorhandler, interceptor, handshake handler 추가
+        //todo: errorhandler, handshake handler 추가
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(jwtInterceptor);
     }
-
-    //todo : 웹소켓 커넥션, 데이터 크기 설정 컨테이너 관리 bean 생성
 }
