@@ -12,20 +12,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MemberDto extends User {
 
-    private String email, pwd, nickname;
+    private Long memberId;
+    private String email, pwd, profile, nickname;
     private List<String> roleNames = new ArrayList<>();
 
 
-    public MemberDto(String email, String pwd, String nickname, List<String> roleNames) {
+    public MemberDto(Long id,
+                     String email,
+                     String pwd,
+                     String profile,
+                     String nickname,
+                     List<String> roleNames) {
         super(
                 email,
                 pwd,
                 roleNames.stream().map(str -> new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList())
-
         );
 
+        this.memberId = id;
         this.email = email;
         this.pwd = pwd;
+        this.profile = profile;
         this.nickname = nickname;
         this.roleNames = roleNames;
     }
@@ -33,8 +40,10 @@ public class MemberDto extends User {
     public Map<String, Object> getClaims() {
         Map<String, Object> dataMap = new HashMap<>();
 
+        dataMap.put("memberId", memberId);
         dataMap.put("email", email);
         dataMap.put("pwd", pwd);
+        dataMap.put("profile", profile);
         dataMap.put("nickname", nickname);
         dataMap.put("roleNames", roleNames);
 
@@ -46,8 +55,10 @@ public class MemberDto extends User {
 
     public static MemberDto from(Member member) {
         return new MemberDto(
+                member.getId(),
                 member.getEmail(),
                 member.getPwd(),
+                member.getProfile(),
                 member.getNickname(),
                 member.getRoleList().stream().map(memberRole -> memberRole.name()).collect(Collectors.toList())
         );

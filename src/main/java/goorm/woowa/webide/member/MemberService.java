@@ -30,17 +30,17 @@ public class MemberService {
 
     public MemberDto getKakaoMember(String accessToken) {
         // accessToken을 이용해서 사용자 정보 가져오기
-        String nickname = getEmailFromKakaoAccessToken(accessToken);
+        Map<String, String> memberInfoKakao = getEmailFromKakaoAccessToken(accessToken);
 
         // 기존에 DB에 회원 정보가 있는 경우 / 없는 경우
-        Optional<Member> resultMember = memberRepository.findByEmailAndNickname(nickname, nickname);
+        Optional<Member> resultMember = memberRepository.findByEmail(memberInfoKakao.get("email"));
 
         if (resultMember.isPresent()) {
             //return
             return MemberDto.from(resultMember.get());
         }
 
-        Member socialMember = makeMemberFromKakao(nickname);
+        Member socialMember = makeMemberFromKakao(memberInfoKakao.get("email"), memberInfoKakao.get("nickname"), memberInfoKakao.get("profile_image"));
         memberRepository.save(socialMember);
 
         return MemberDto.from(socialMember);
@@ -58,16 +58,29 @@ public class MemberService {
         }
 
         // 3. 없으면 회원 저장
-        Member member = makeMemberFromGoogle(memberInfoFromGoogle.get("email"), memberInfoFromGoogle.get("name"));
+        Member member = makeMemberFromGoogle(memberInfoFromGoogle.get("email"), memberInfoFromGoogle.get("name"), memberInfoFromGoogle.get("picture"));
         memberRepository.save(member);
 
         return MemberDto.from(member);
     }
 
     public MemberDto updateMember(MemberUpdateDto memberUpdateDto) {
+        log.info("updateMember at memberService={}", memberUpdateDto);
         Optional<Member> result = memberRepository.findByEmail(memberUpdateDto.getEmail());
         Member member = result.orElseThrow();
         member.setEmail(memberUpdateDto.getEmail());
+        member.setNickname(memberUpdateDto.getNickname());
+
+        // 새로운 jwt 토큰 만들어 보내기
+
+        return MemberDto.from(member);
+    }
+
+    public MemberDto updateMemberEmail(MemberUpdateDto memberUpdateDto, String newEmail) {
+        log.info("updateMember at memberService={}", memberUpdateDto);
+        Optional<Member> result = memberRepository.findByEmail(memberUpdateDto.getEmail());
+        Member member = result.orElseThrow();
+        member.setEmail(newEmail);
         member.setNickname(memberUpdateDto.getNickname());
 
         // 새로운 jwt 토큰 만들어 보내기
@@ -81,13 +94,14 @@ public class MemberService {
         return "deleted";
     }
 
-    private Member makeMemberFromKakao(String nickname) {
+    private Member makeMemberFromKakao(String email, String nickname, String profile) {
         String tempPassword = makeTempPassword();
         log.info("tempPassword={}", tempPassword);
 
         Member member = Member.builder()
-                .email(nickname)
+                .email(email)
                 .pwd(passwordEncoder.encode(tempPassword))
+                .profile(profile)
                 .nickname(nickname)
                 .build();
 
@@ -96,10 +110,11 @@ public class MemberService {
         return member;
     }
 
-    private Member makeMemberFromGoogle(String email, String nickname) {
+    private Member makeMemberFromGoogle(String email, String nickname, String profile) {
         Member member = Member.builder()
                 .email(email)
                 .pwd(passwordEncoder.encode(makeTempPassword()))
+                .profile(profile)
                 .nickname(nickname)
                 .build();
 
@@ -108,7 +123,7 @@ public class MemberService {
         return member;
     }
 
-    private String getEmailFromKakaoAccessToken(String accessToken) {
+    private Map<String, String> getEmailFromKakaoAccessToken(String accessToken) {
         String kakaoGetUserURL = "https://kapi.kakao.com/v2/user/me";
 
         log.info("accessToken={}", accessToken);
@@ -130,13 +145,14 @@ public class MemberService {
 
         LinkedHashMap<String, LinkedHashMap> bodyMap = response.getBody();
         LinkedHashMap<String, String> kakaoAccount = bodyMap.get("properties");
+        kakaoAccount.put("email", bodyMap.get("kakao_account").get("email").toString());
         String nickname = kakaoAccount.get("nickname");
-        log.info("nickname={}", nickname);
+        log.info("profile={}", kakaoAccount.get("profile_image"));
 
         log.info("--------------------------------");
         log.info("bodyMap={}", bodyMap);
 
-        return nickname;
+        return kakaoAccount;
     }
 
     private Map<String, String> getMemberInfoFromGoogleAccessToken(String accessToken, String scope) {
