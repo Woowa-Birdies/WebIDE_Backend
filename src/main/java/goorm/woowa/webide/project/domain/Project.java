@@ -2,6 +2,7 @@ package goorm.woowa.webide.project.domain;
 
 
 import goorm.woowa.webide.common.domain.BaseTimeEntity;
+import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import jakarta.persistence.*;
@@ -20,7 +21,9 @@ public class Project extends BaseTimeEntity {
     private Long id;
 
     // TODO: 유저 엔티티 생성되면 연관관계 설정 (다대일)
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
     @Column(length = 128)
     private String name;
     @Enumerated(EnumType.STRING)
