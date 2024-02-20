@@ -1,0 +1,3 @@
+[submodule "WebIDE_BackEnd_Private"]
+	path = WebIDE_BackEnd_Private
+	url = git@github.com:Woowa-Birdies/WebIDE_BackEnd_Private.git
