@@ -30,9 +30,12 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
+        shell: bash
+      
+      - name: Copy secret files
+        run: ./gradlew copySecret
         shell: bash
       
       - name: Build with Gradle
