@@ -44,6 +44,3 @@ application-dev.yml
 application-test.yml
 application-prod.yml
 /src/main/resources/application.yml
-
-### submodule ###
-WebIDE_BackEnd_Private/
