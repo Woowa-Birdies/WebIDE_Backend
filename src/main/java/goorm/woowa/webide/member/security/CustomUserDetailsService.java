@@ -32,8 +32,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         return new MemberDto(
+                member.getId(),
                 member.getEmail(),
                 member.getPwd(),
+                member.getProfile(),
                 member.getNickname(),
                 member.getRoleList()
                         .stream()
