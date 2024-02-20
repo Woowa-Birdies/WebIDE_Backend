@@ -26,6 +26,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+          submodules: true
+          token: ${{ secrets.ACTION_SECRETS }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
