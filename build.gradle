@@ -101,5 +101,6 @@ processResources.dependsOn('copySecret')
 tasks.register('copySecret', Copy) {
 	from './WebIDE_BackEnd_Private'
 	include "*.yml"  // 복사할 파일들
+	include "*.properties"
 	into 'src/main/resources'  // 복사 위치
 }

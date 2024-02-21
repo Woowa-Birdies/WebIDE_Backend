@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.efs.model.*;
 
 @Service
 @RequiredArgsConstructor
-public class EfsService {
+public class EfsService implements EfsUseCase{
 
     private final EfsClient efsClient;
     @Value("${aws.efs.fileSystemId}")

@@ -10,10 +10,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.efs.EfsClient;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
-
-
 @Configuration
-@PropertySource("classpath:aws.yml")
+@PropertySource("classpath:aws.properties")
 public class AwsConfig {
 
     @Value("${aws.accessKey}")
