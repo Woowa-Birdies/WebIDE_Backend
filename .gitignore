@@ -43,4 +43,5 @@ src/main/generated/
 application-dev.yml
 application-test.yml
 application-prod.yml
-/src/main/resources/application.yml
+/src/main/resources/application*.yml
+/src/main/resources/aws.yml
