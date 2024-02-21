@@ -1,5 +1,6 @@
 package goorm.woowa.webide.project.service;
 
+import goorm.woowa.webide.efs.service.EfsService;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.Project;
@@ -22,13 +23,17 @@ public class ProjectQueryService {
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
 
+    private final EfsService efsService;
+
     public Long create(ProjectCreate projectCreate) {
         Member member = memberRepository
                 .findById(projectCreate.getMemberId())
                 .orElseThrow(() -> new NoSuchElementException("해당 Id에 해당하는 Member를 찾을 수 없습니다."));
-
-        return projectRepository
-                .save(Project.toEntity(projectCreate, member, UUID.randomUUID().toString())).getId();
+        Project project = projectRepository
+                .save(Project.toEntity(projectCreate, member, UUID.randomUUID().toString()));
+        String efsAccessPoint = efsService.createEFSAccessPoint(String.valueOf(project.getId()));
+        project.registerEFSAccessPoint(efsAccessPoint);
+        return project.getId();
     }
 
     public Long update(ProjectUpdate projectUpdate) {
