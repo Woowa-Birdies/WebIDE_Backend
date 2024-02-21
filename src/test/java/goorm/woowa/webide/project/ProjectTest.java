@@ -2,6 +2,7 @@ package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import goorm.woowa.webide.common.TestSecurityConfig;
+import goorm.woowa.webide.efs.TestEfsService;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.member.data.MemberRole;
@@ -9,7 +10,10 @@ import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.service.ProjectQueryService;
+import goorm.woowa.webide.project.service.ProjectReadService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,15 +40,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
     private ProjectQueryService projectQueryService;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private ProblemRepository problemRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectReadService projectReadService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+    @BeforeEach
+    void setUp() {
+        projectQueryService = ProjectQueryService.builder()
+                .efsService(new TestEfsService())
+                .projectRepository(projectRepository)
+                .memberRepository(memberRepository)
+                .projectReadService(projectReadService)
+                .build();
+    }
 
     @Test
     @DisplayName("사용자는 프로젝트를 상세조회할 수 있다")
@@ -128,6 +147,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_만들_수_있다() throws Exception {
         //given
+
         Member member = memberRepository.save(Member.builder()
                 .email("email")
                 .pwd("pwd")

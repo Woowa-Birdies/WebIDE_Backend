@@ -1,6 +1,7 @@
 package goorm.woowa.webide.project.service;
 
 import goorm.woowa.webide.efs.service.EfsService;
+import goorm.woowa.webide.efs.service.EfsUseCase;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.Project;
@@ -8,6 +9,7 @@ import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class ProjectQueryService {
@@ -23,7 +26,7 @@ public class ProjectQueryService {
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
 
-    private final EfsService efsService;
+    private final EfsUseCase efsService;
 
     public Long create(ProjectCreate projectCreate) {
         Member member = memberRepository
