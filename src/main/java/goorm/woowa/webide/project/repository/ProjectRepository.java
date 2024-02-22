@@ -14,7 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT new goorm.woowa.webide.project.repository.dto.ProjectDetails(p.id, pb.id, m.id, m.nickname, " +
             "p.name, p.language, p.code, p.keyHash, pb.problem, pb.title, pb.parameter, pb.inputValue, " +
-            "pb.outputValue, c.candidateName) " +
+            "pb.outputValue, c.candidateName, c.birthDate) " +
             "FROM Project p " +
             "JOIN Member m ON p.member = m " +
             "JOIN Problem pb ON p.problemId = pb.id " +

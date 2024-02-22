@@ -2,7 +2,6 @@ package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import goorm.woowa.webide.common.TestSecurityConfig;
-import goorm.woowa.webide.efs.TestEfsService;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.member.data.MemberRole;
@@ -13,7 +12,6 @@ import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +23,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.util.List;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
-    private ProjectQueryService projectQueryService;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -49,19 +44,21 @@ class ProjectTest {
     private ProjectRepository projectRepository;
     @Autowired
     private ProjectReadService projectReadService;
+    @Autowired
+    private ProjectQueryService projectQueryService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @BeforeEach
-    void setUp() {
-        projectQueryService = ProjectQueryService.builder()
-                .efsService(new TestEfsService())
-                .projectRepository(projectRepository)
-                .memberRepository(memberRepository)
-                .projectReadService(projectReadService)
-                .build();
-    }
+//    @BeforeEach
+//    void setUp() {
+//        projectQueryService = ProjectQueryService.builder()
+//                .efsService(new TestEfsService())
+//                .projectRepository(projectRepository)
+//                .memberRepository(memberRepository)
+//                .projectReadService(projectReadService)
+//                .build();
+//    }
 
     @Test
     @DisplayName("사용자는 프로젝트를 상세조회할 수 있다")
@@ -81,7 +78,6 @@ class ProjectTest {
                 .parameter("parameter")
                 .build());
 
-
         Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
                 .memberId(member.getId())
@@ -89,7 +85,7 @@ class ProjectTest {
                 .build());
         //when
         //then
-        mockMvc.perform(get("/ide/{id}", projectId).with(csrf()))
+        mockMvc.perform(get("/ide/{memberId}/{projectId}", member.getId(), projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectId").isNumber())
                 .andExpect(jsonPath("$.projectName").value("CreateTest"))
@@ -139,7 +135,6 @@ class ProjectTest {
                 .andExpect(jsonPath("$[0].candidateName").isEmpty())
                 .andExpect(jsonPath("$[0].problemTitle").value("title"))
                 .andExpect(jsonPath("$[0].keyHash").isNotEmpty());
-
     }
 
     @Test

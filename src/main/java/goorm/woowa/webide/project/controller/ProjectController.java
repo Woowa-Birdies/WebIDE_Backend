@@ -27,10 +27,19 @@ public class ProjectController {
         return ResponseEntity.ok(projectReadService.getListByMemberId(memberId));
     }
 
-    @GetMapping("/ide/{id}")
-    public ResponseEntity<ProjectDetails> getById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(projectReadService.getByIdDetails(id));
+    @GetMapping("/ide/{memberId}/{projectId}/{hash}")
+    public ResponseEntity<ProjectDetails> getById(@PathVariable("memberId") Long memberId,
+                                                  @PathVariable("projectId") Long projectId,
+                                                  @PathVariable(value = "hash") String hash) {
+        return ResponseEntity.ok(projectReadService.getByIdDetails(memberId, projectId, hash));
     }
+
+    @GetMapping("/ide/{memberId}/{projectId}")
+    public ResponseEntity<ProjectDetails> getById(@PathVariable("memberId") Long memberId,
+                                                  @PathVariable("projectId") Long projectId) {
+        return ResponseEntity.ok(projectReadService.getByIdDetails(memberId, projectId, null));
+    }
+
 
     @PostMapping("/projects")
     public ResponseEntity<Long> create(@RequestBody @Valid ProjectCreate projectCreate) {

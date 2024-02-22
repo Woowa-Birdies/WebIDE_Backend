@@ -15,10 +15,9 @@ import java.util.NoSuchElementException;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProjectReadService {
+    
     private final ProjectRepository projectRepository;
 
-
-    // TODO : User 연관관계 생기면 User에 따른 프로젝트 리스트 반환
 
     // get: Non-Optional / find : Optional
     public Project getById(Long id) {
@@ -26,9 +25,19 @@ public class ProjectReadService {
                 .orElseThrow(() -> new NoSuchElementException("해당 Id에 Project를 찾을 수 없습니다."));
     }
 
-    public ProjectDetails getByIdDetails(Long id) {
-        return projectRepository.findProjectDetailsById(id)
+    public ProjectDetails getByIdDetails(Long memberId, Long projectId, String hash) {
+        ProjectDetails projectDetails = projectRepository.findProjectDetailsById(projectId)
                 .orElseThrow(() -> new NoSuchElementException("해당 Id에 Project를 찾을 수 없습니다."));
+
+        // 응시자 체크
+        if (hash != null && !hash.equals(projectDetails.getKeyHash())) {
+            throw new IllegalStateException("프로젝트 응시자가 아닙니다.");
+        }
+
+        // 프로젝트 생성자 체크
+        if (!projectDetails.getMemberId().equals(memberId))
+            throw new IllegalStateException("프로젝트 소유자가 아닙니다.");
+        return projectDetails;
     }
 
     public List<ProjectListResponse> getListByMemberId(Long memberId) {
