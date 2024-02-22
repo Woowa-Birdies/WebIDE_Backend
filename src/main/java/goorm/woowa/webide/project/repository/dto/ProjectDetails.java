@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +27,5 @@ public class ProjectDetails {
     private String inputValue;
     private String outputValue;
     private String candidateName;
+    private LocalDateTime birthDate;
 }
