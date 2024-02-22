@@ -7,11 +7,15 @@ import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.member.data.MemberRole;
 import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
+import goorm.woowa.webide.project.service.FileExecute;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
+import goorm.woowa.webide.project.util.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +27,16 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestSecurityConfig.class)
@@ -232,5 +240,26 @@ class ProjectTest {
         mockMvc.perform(delete("/projects/{id}", projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(projectId.toString()));
+    }
+
+
+    @Test
+    @DisplayName("사용자는 프로젝트를 실행시킬 수 있다.")
+    @WithMockUser(username = "test", roles = "USER")
+    void 사용자는_프로젝트를_실행시킬_수_있다() throws Exception {
+        // given
+        String pythonCode = "print('hello')\nprint('world')";
+        String javaCode =
+                "public class Test {\n" +
+                "   public static void main(String[] args) {" +
+                "       System.out.println(\"hello\");" +
+                "   }" +
+                "\n}";
+
+        // when
+        FileExecute.executeFile(pythonCode, ProjectLanguage.PYTHON);
+
+        // then
+
     }
 }
