@@ -3,6 +3,7 @@ package goorm.woowa.webide.project.domain.dto;
 import lombok.*;
 
 @Getter @Setter
+@ToString
 @NoArgsConstructor
 public class ProjectResult {
     @NonNull

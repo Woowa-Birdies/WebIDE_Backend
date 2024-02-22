@@ -7,13 +7,19 @@ import java.nio.file.*;
 
 public class FileUtil {
 
+    private static final String DIRECTORY_PATH = "../";
+
     public static String makeFileFromCode(String str, ProjectLanguage language) {
         BufferedWriter fw;
+        File f;
         String fileType = language.name().equals("PYTHON") ? ".py" : language.name().equals("JAVA") ? ".java" : ".cpp";
+
+        // todo: java, cpp 는 파일명이 대문자로 시작하고 클래스와 이름이 같아야함
 
         {
             try {
-                fw = new BufferedWriter(new FileWriter("test" + fileType, true));
+                f = new File(DIRECTORY_PATH + "Test" + fileType);
+                fw = new BufferedWriter(new FileWriter(f));
                 fw.write(str);
                 fw.flush();
 
@@ -23,7 +29,7 @@ public class FileUtil {
             }
         }
 
-        return "test" + fileType;
+        return DIRECTORY_PATH + "Test" + fileType;
     }
 
     public static int deleteFile(String fileName) {

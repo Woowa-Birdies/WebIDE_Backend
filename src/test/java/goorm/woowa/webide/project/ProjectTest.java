@@ -14,7 +14,6 @@ import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.service.FileExecute;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
-import goorm.woowa.webide.project.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import static goorm.woowa.webide.project.domain.ProjectLanguage.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -248,7 +248,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_실행시킬_수_있다() throws Exception {
         // given
-        String pythonCode = "a = 1";
+        String pythonCode = "print('hello')\nprint('print')";
         String javaCode =
                 "public class Test {\n" +
                 "   public static void main(String[] args) {" +
@@ -257,7 +257,7 @@ class ProjectTest {
                 "\n}";
 
         // when
-        FileExecute.executeFile(pythonCode, ProjectLanguage.PYTHON);
+        FileExecute.executeFile(pythonCode, PYTHON);
 
         // then
 
