@@ -45,3 +45,4 @@ application-test.yml
 application-prod.yml
 /src/main/resources/application*.yml
 /src/main/resources/aws.yml
+/src/main/resources/aws.properties
