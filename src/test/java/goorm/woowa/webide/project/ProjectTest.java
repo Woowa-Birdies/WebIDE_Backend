@@ -248,7 +248,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_실행시킬_수_있다() throws Exception {
         // given
-        String pythonCode = "print('hello')\nprint('world')";
+        String pythonCode = "a = 1";
         String javaCode =
                 "public class Test {\n" +
                 "   public static void main(String[] args) {" +
