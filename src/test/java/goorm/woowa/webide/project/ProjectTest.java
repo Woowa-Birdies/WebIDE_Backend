@@ -9,7 +9,9 @@ import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.service.ProjectQueryService;
+import goorm.woowa.webide.project.service.ProjectReadService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +37,28 @@ class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private ProjectQueryService projectQueryService;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private ProblemRepository problemRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectReadService projectReadService;
+    @Autowired
+    private ProjectQueryService projectQueryService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+//    @BeforeEach
+//    void setUp() {
+//        projectQueryService = ProjectQueryService.builder()
+//                .efsService(new TestEfsService())
+//                .projectRepository(projectRepository)
+//                .memberRepository(memberRepository)
+//                .projectReadService(projectReadService)
+//                .build();
+//    }
 
     @Test
     @DisplayName("사용자는 프로젝트를 상세조회할 수 있다")
@@ -62,7 +78,6 @@ class ProjectTest {
                 .parameter("parameter")
                 .build());
 
-
         Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
                 .memberId(member.getId())
@@ -70,7 +85,7 @@ class ProjectTest {
                 .build());
         //when
         //then
-        mockMvc.perform(get("/ide/{id}", projectId).with(csrf()))
+        mockMvc.perform(get("/ide/{memberId}/{projectId}", member.getId(), projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectId").isNumber())
                 .andExpect(jsonPath("$.projectName").value("CreateTest"))
@@ -120,7 +135,6 @@ class ProjectTest {
                 .andExpect(jsonPath("$[0].candidateName").isEmpty())
                 .andExpect(jsonPath("$[0].problemTitle").value("title"))
                 .andExpect(jsonPath("$[0].keyHash").isNotEmpty());
-
     }
 
     @Test
@@ -128,6 +142,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_만들_수_있다() throws Exception {
         //given
+
         Member member = memberRepository.save(Member.builder()
                 .email("email")
                 .pwd("pwd")
