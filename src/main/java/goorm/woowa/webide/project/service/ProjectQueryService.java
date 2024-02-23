@@ -3,8 +3,10 @@ package goorm.woowa.webide.project.service;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.Project;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
+import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import lombok.Builder;
@@ -56,6 +58,13 @@ public class ProjectQueryService {
     public Long delete(Long id) {
         Project project = projectReadService.getById(id);
         projectRepository.deleteById(id);
+        return project.getId();
+    }
+
+    public Long saveCode(Long projectId, ProjectExecute projectExecute) {
+        Project project = projectReadService.getById(projectId);
+        project.saveCodeAndLanguage(projectExecute.getCode(), projectExecute.getLanguage());
+
         return project.getId();
     }
 

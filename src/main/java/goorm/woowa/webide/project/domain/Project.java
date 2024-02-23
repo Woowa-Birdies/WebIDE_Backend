@@ -76,5 +76,10 @@ public class Project extends BaseTimeEntity {
         this.language = language;
     }
 
+    public void saveCodeAndLanguage(String code, ProjectLanguage language) {
+        this.code = code;
+        this.language = language;
+    }
+
     public void registerEFSAccessPoint(String efsAccess) { this.efsAccessId = efsAccess; }
 }
