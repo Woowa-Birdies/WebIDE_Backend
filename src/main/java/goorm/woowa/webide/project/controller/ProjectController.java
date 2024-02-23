@@ -37,8 +37,7 @@ public class ProjectController {
                                                   @PathVariable("projectId") Long projectId) {
         return ResponseEntity.ok(projectReadService.getByIdDetails(memberId, projectId, null));
     }
-
-
+    
     @PostMapping("/projects")
     public ResponseEntity<Long> create(@RequestBody @Valid ProjectCreate projectCreate) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -63,7 +62,7 @@ public class ProjectController {
 
     @PostMapping("/ide/{id}/result")
     public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
-                                            @RequestBody ProjectExecute projectExecute) {
+                                                   @RequestBody ProjectExecute projectExecute) {
         projectQueryService.saveCode(id, projectExecute);
         return ResponseEntity.ok(projectReadService.getProjectResult(id, projectExecute));
     }
@@ -71,7 +70,6 @@ public class ProjectController {
     @PatchMapping("/ide/{id}/save")
     public ResponseEntity<Long> saveCode(@PathVariable("id") Long id,
                                             @RequestBody ProjectExecute projectExecute) {
-
         return ResponseEntity.ok(projectQueryService.saveCode(id, projectExecute));
     }
 }

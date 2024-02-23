@@ -16,18 +16,9 @@ public class Problem extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 128)
+    @Column(columnDefinition = "text")
     private String problem;
 
     @Column(length = 128)
     private String title;
-
-    @Column(columnDefinition = "text")
-    private String parameter;
-
-    @Column(columnDefinition = "text")
-    private String inputValue;
-
-    @Column(columnDefinition = "text")
-    private String outputValue;
 }
