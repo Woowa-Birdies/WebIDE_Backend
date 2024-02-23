@@ -20,10 +20,8 @@ public class SocialController {
 
     private final MemberService memberService;
 
-    // /api -> jwt 필터 안 고치게 하려고 붙임
-    @GetMapping("/kakao")
-    public Map<String, Object> getMemberFromKakao(String accessToken) {
-        log.info("accessToken from kakao={}", accessToken);
+    @PostMapping("/kakao")
+    public Map<String, Object> getMemberFromKakao(@RequestBody String accessToken) {
 
         MemberDto member = memberService.getKakaoMember(accessToken);
 
@@ -36,11 +34,9 @@ public class SocialController {
     }
 
     @PostMapping("/google")
-    public Map<String, Object> getMemberFormGoogle(@RequestBody MemberGoogleLoginReqeust memberLoginRequest) {
-        log.info("google login request={}", memberLoginRequest);
+    public Map<String, Object> getMemberFormGoogle(@RequestBody String accessToken) {
 
-        MemberDto googleMember = memberService.getGoogleMember(memberLoginRequest.getAccessToken(), memberLoginRequest.getScope());
-        log.info("googleMember at controller ={}", googleMember);
+        MemberDto googleMember = memberService.getGoogleMember(accessToken);
 
         Map<String, Object> claims = googleMember.getClaims();
 
