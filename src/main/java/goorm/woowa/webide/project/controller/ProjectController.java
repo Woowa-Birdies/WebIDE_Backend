@@ -61,7 +61,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectQueryService.registerLanguage(id, languageUpdate));
     }
 
-    @PostMapping("/projects/{id}/result")
+    @PostMapping("/ide/{id}/result")
     public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
                                             @RequestBody ProjectExecute projectExecute) {
 
