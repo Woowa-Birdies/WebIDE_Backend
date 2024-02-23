@@ -18,7 +18,7 @@ public class FileUtil {
 
         {
             try {
-                f = new File(DIRECTORY_PATH + "Test" + fileType);
+                f = new File("Test" + fileType);
                 fw = new BufferedWriter(new FileWriter(f));
                 fw.write(str);
                 fw.flush();
@@ -29,7 +29,7 @@ public class FileUtil {
             }
         }
 
-        return DIRECTORY_PATH + "Test" + fileType;
+        return "Test" + fileType;
     }
 
     public static int deleteFile(String fileName) {

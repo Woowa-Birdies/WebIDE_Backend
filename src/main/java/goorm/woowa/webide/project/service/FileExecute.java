@@ -3,7 +3,6 @@ package goorm.woowa.webide.project.service;
 
 import com.google.gson.Gson;
 import goorm.woowa.webide.project.domain.ProjectLanguage;
-import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +42,15 @@ public class FileExecute {
                     break;
                 }
                 FileUtil.deleteFile(fileName);
-                response = commonProcess(command2, "../Test");
+                response = commonProcess(command2, "Test");
                 log.info("java response={}", response);
-                FileUtil.deleteFile("../Test.class");
+                FileUtil.deleteFile("Test.class");
+            }
+            case "CPP" -> {
+                fileName = FileUtil.makeFileFromCode(code, language);
+                command1 = "g++ -o";
+                log.info("command={}, filename={}", command1, fileName);
+                response = commonProcess(command1, fileName);
             }
         }
 

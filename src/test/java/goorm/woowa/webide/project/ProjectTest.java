@@ -255,9 +255,22 @@ class ProjectTest {
                 "       System.out.println(\"hello\");" +
                 "   }" +
                 "\n}";
+        String cppCode =
+                "#include <iostream>\n" +
+                        "\n" +
+                        "using namespace std;\n" +
+                        "\n" +
+                        "int main(int argc, char const *argv[])\n" +
+                        "{\n" +
+                        "    cout << \"input numbers\" << endl;\n" +
+                        "    int x;\n" +
+                        "    cin >> x;\n" +
+                        "    cout << \"hello : \" << x << endl;\n" +
+                        "    return 0;\n" +
+                        "}";
 
         // when
-        FileExecute.executeFile(pythonCode, PYTHON);
+        FileExecute.executeFile(cppCode, CPP);
 
         // then
 
