@@ -7,7 +7,6 @@ import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.member.data.MemberRole;
 import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
-import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
@@ -26,12 +25,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
-import static goorm.woowa.webide.project.domain.ProjectLanguage.*;
+import static goorm.woowa.webide.project.domain.ProjectLanguage.CPP;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -81,9 +77,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -98,10 +91,7 @@ class ProjectTest {
                 .andExpect(jsonPath("$.projectId").isNumber())
                 .andExpect(jsonPath("$.projectName").value("CreateTest"))
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.outputValue").value("output"))
-                .andExpect(jsonPath("$.inputValue").value("input"))
-                .andExpect(jsonPath("$.memberName").value("nickname"))
-                .andExpect(jsonPath("$.parameter").value("parameter"));
+                .andExpect(jsonPath("$.memberName").value("nickname"));
     }
 
 
@@ -117,9 +107,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
 
@@ -159,9 +146,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         ProjectCreate createTest = ProjectCreate.builder()
@@ -190,9 +174,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -225,9 +206,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -251,10 +229,10 @@ class ProjectTest {
         String pythonCode = "print('hello')\nprint('print')";
         String javaCode =
                 "public class Test {\n" +
-                "   public static void main(String[] args) {" +
-                "       System.out.println(\"hello\");" +
-                "   }" +
-                "\n}";
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
         String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
@@ -262,10 +240,9 @@ class ProjectTest {
                         "\n" +
                         "int main(int argc, char const *argv[])\n" +
                         "{\n" +
-                        "    cout << \"input numbers\" << endl;\n" +
-//                        "    int x;\n" +
-//                        "    cin >> x;\n" +
-//                        "    cout << \"hello : \" << x << endl;\n" +
+                        "    cout << \"input numbers\" << endl;\n " +
+                        "   for (int i = 0; i < argc; i++) {" +
+                        "       cout << argv[i] << endl;" +
                         "    return 0;\n" +
                         "}";
 

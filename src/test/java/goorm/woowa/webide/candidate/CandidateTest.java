@@ -64,9 +64,6 @@ public class CandidateTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
 
@@ -88,7 +85,7 @@ public class CandidateTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createTest)))
                 .andExpect(status().isCreated());
-        
+
         Project project1 = projectRepository.findById(project.getId()).orElseThrow(() -> new NoSuchElementException("그런 Project 없습니다."));
         Candidate candidate = candidateRepository.findById(project1.getCandidateId()).orElseThrow(() -> new NoSuchElementException("그런 응시자 없습니다."));
         assertThat(project1.getCandidateId()).isEqualTo(candidate.getId());

@@ -37,9 +37,68 @@ public class InitDummyData {
         Member member3 = createMember("email3", "pwd3", "nickname3");
 
         // Problem 생성
-        Problem problem1 = createProblem("problem title1", "problem1", "input1", "output1", "parameter1");
-        Problem problem2 = createProblem("problem title2", "problem2", "input2", "output2", "parameter2");
-        Problem problem3 = createProblem("problem title3", "problem3", "input3", "output3", "parameter3");
+        Problem problem1 = createProblem("문자열 뒤집기", """
+                문제 설명:
+
+                주어진 문자열을 뒤집는 함수를 작성하시오.
+                                
+                입력 예시:
+
+                input_str = "Hello, world!"\s
+                                
+                출력 예시:
+
+                output_str = "!dlrow ,olleH"
+                                
+                설명:
+                                
+                input_str은 뒤집을 문자열입니다.
+                output_str은 뒤집힌 문자열입니다.
+                문자열을 뒤집는 방법은 여러 가지가 있습니다.
+                """);
+        Problem problem2 = createProblem("문자열 퍼즐", """
+                문제 설명:
+
+                주어진 문자열과 퍼즐 조각들을 사용하여 원본 문자열을 재구성하는 함수를 작성하시오. 퍼즐 조각들은 원본 문자열의 일부분이며, 순서가 뒤섞여 있을 수 있습니다.
+
+                입력 예시:
+
+                original_str = "abracadabra"
+                puzzle_pieces = ["aca", "dab", "ra", "br", "c"]
+                                
+                출력 예시:
+
+                reconstructed_str = "abracadabra"
+                                
+                설명:
+
+                original_str은 원본 문자열입니다.
+                puzzle_pieces는 퍼즐 조각들의 리스트입니다.
+                reconstructed_str은 퍼즐 조각들을 사용하여 재구성된 문자열입니다.""");
+        Problem problem3 = createProblem("동전 교환 문제", """
+                문제 설명:
+
+                주어진 동전 종류와 금액을 사용하여 최소 개수의 동전으로 금액을 만드는 방법을 찾는 함수를 작성하시오.
+
+                입력 예시:
+
+                coins = [1, 5, 10, 25]
+                amount = 11
+                                
+                출력 예시:
+
+                # 사용된 동전의 개수
+                coin_counts = [0, 2, 0, 0]
+
+                # 총 동전 개수
+                total_coins = 2
+                                
+                설명:
+
+                coins는 동전 종류를 나타내는 리스트입니다.
+                amount는 만들고자 하는 금액입니다.
+                coin_counts는 각 동전 종류의 사용 개수를 저장하는 리스트입니다.
+                total_coins는 총 동전의 개수입니다.""");
 
         // Candidate 생성
         Candidate candidate1 = createCandidate("name1");
@@ -76,14 +135,11 @@ public class InitDummyData {
         );
     }
 
-    private Problem createProblem(String title, String problem, String input, String output, String parameter) {
+    private Problem createProblem(String title, String problem) {
         return problemRepository.save(
                 Problem.builder()
                         .title(title)
                         .problem(problem)
-                        .inputValue(input)
-                        .outputValue(output)
-                        .parameter(parameter)
                         .build()
         );
     }
