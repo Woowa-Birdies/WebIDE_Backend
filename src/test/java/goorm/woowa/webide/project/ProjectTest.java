@@ -7,9 +7,14 @@ import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.member.data.MemberRole;
 import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.repository.ProjectRepository;
+import goorm.woowa.webide.project.service.FileExecute;
 import goorm.woowa.webide.project.service.ProjectQueryService;
+import goorm.woowa.webide.project.service.ProjectReadService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +26,17 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
+import static goorm.woowa.webide.project.domain.ProjectLanguage.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestSecurityConfig.class)
@@ -35,14 +45,28 @@ class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private ProjectQueryService projectQueryService;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private ProblemRepository problemRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectReadService projectReadService;
+    @Autowired
+    private ProjectQueryService projectQueryService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+//    @BeforeEach
+//    void setUp() {
+//        projectQueryService = ProjectQueryService.builder()
+//                .efsService(new TestEfsService())
+//                .projectRepository(projectRepository)
+//                .memberRepository(memberRepository)
+//                .projectReadService(projectReadService)
+//                .build();
+//    }
 
     @Test
     @DisplayName("사용자는 프로젝트를 상세조회할 수 있다")
@@ -62,7 +86,6 @@ class ProjectTest {
                 .parameter("parameter")
                 .build());
 
-
         Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
                 .memberId(member.getId())
@@ -70,7 +93,7 @@ class ProjectTest {
                 .build());
         //when
         //then
-        mockMvc.perform(get("/ide/{id}", projectId).with(csrf()))
+        mockMvc.perform(get("/ide/{memberId}/{projectId}", member.getId(), projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectId").isNumber())
                 .andExpect(jsonPath("$.projectName").value("CreateTest"))
@@ -120,7 +143,6 @@ class ProjectTest {
                 .andExpect(jsonPath("$[0].candidateName").isEmpty())
                 .andExpect(jsonPath("$[0].problemTitle").value("title"))
                 .andExpect(jsonPath("$[0].keyHash").isNotEmpty());
-
     }
 
     @Test
@@ -128,6 +150,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_만들_수_있다() throws Exception {
         //given
+
         Member member = memberRepository.save(Member.builder()
                 .email("email")
                 .pwd("pwd")
@@ -217,5 +240,39 @@ class ProjectTest {
         mockMvc.perform(delete("/projects/{id}", projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(projectId.toString()));
+    }
+
+
+    @Test
+    @DisplayName("사용자는 프로젝트를 실행시킬 수 있다.")
+    @WithMockUser(username = "test", roles = "USER")
+    void 사용자는_프로젝트를_실행시킬_수_있다() throws Exception {
+        // given
+        String pythonCode = "print('hello')\nprint('print')";
+        String javaCode =
+                "public class Test {\n" +
+                "   public static void main(String[] args) {" +
+                "       System.out.println(\"hello\");" +
+                "   }" +
+                "\n}";
+        String cppCode =
+                "#include <iostream>\n" +
+                        "\n" +
+                        "using namespace std;\n" +
+                        "\n" +
+                        "int main(int argc, char const *argv[])\n" +
+                        "{\n" +
+                        "    cout << \"input numbers\" << endl;\n" +
+                        "    int x;\n" +
+                        "    cin >> x;\n" +
+                        "    cout << \"hello : \" << x << endl;\n" +
+                        "    return 0;\n" +
+                        "}";
+
+        // when
+        FileExecute.executeFile(cppCode, CPP);
+
+        // then
+
     }
 }
