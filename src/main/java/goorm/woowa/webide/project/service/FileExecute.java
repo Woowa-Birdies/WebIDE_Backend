@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class FileExecute {
@@ -35,30 +36,32 @@ public class FileExecute {
                 fileName = FileUtil.makeFileFromCode(code, language);
                 command1 = "javac";
                 command2 = "java";
-                log.info("command={}, filename={}", command1, fileName);
                 response = commonProcess(command1, fileName);
+                FileUtil.deleteFile(fileName);
                 if (response.getStatus().equals("error")) {
-                    FileUtil.deleteFile(fileName);
                     break;
                 }
-                FileUtil.deleteFile(fileName);
                 response = commonProcess(command2, "Test");
-                log.info("java response={}", response);
                 FileUtil.deleteFile("Test.class");
             }
             case "CPP" -> {
                 fileName = FileUtil.makeFileFromCode(code, language);
-                command1 = "g++ -o";
-                log.info("command={}, filename={}", command1, fileName);
+                command1 = "g++";
                 response = commonProcess(command1, fileName);
+                FileUtil.deleteFile(fileName);
+                if (response.getStatus().equals("error")) {
+                    break;
+                }
+                response = commonProcess("./a.out", "1");
+                FileUtil.deleteFile("./a.out");
             }
         }
 
         return response;
     }
 
-    private static ProjectResult commonProcess(String command, String fileName) throws IOException, InterruptedException {
-        ProcessBuilder pb = new ProcessBuilder(command, fileName);
+    private static ProjectResult commonProcess(String... strings) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder(strings);
         Process p = pb.start();
         ProjectResult response = new ProjectResult();
 
@@ -70,8 +73,11 @@ public class FileExecute {
             response.setData(str);
         }
 
+        // todo: 중간에 값을 받는 단계 구현 (java: system.input(~~), cpp: cin >> ~~, python: input(), ~~
+
         // 프로세스 종료 대기 : 0이면 에러 없음, 1이면 에러 있음
         int exitCode = p.waitFor();
+        log.info("exitCode={}", exitCode);
         // 프로세스 강제 종료
         p.destroy();
         // 종료 코드 확인 : 0이면 에러 없음, 1이면 에러 있음

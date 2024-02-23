@@ -29,7 +29,7 @@ public class SocialController {
 
         claims.put("accessToken", JWTUtil.generateToken(claims, 10));
         claims.put("refreshToken", JWTUtil.generateToken(claims, 60 * 24));
- 
+
         return claims;
     }
 

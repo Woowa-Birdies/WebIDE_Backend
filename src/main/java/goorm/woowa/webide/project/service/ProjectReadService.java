@@ -1,6 +1,9 @@
 package goorm.woowa.webide.project.service;
 
 import goorm.woowa.webide.project.domain.Project;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
+import goorm.woowa.webide.project.domain.dto.ProjectExecute;
+import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.repository.dto.ProjectDetails;
 import goorm.woowa.webide.project.repository.dto.ProjectListResponse;
@@ -8,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,5 +47,16 @@ public class ProjectReadService {
 
     public List<ProjectListResponse> getListByMemberId(Long memberId) {
         return projectRepository.findProjectListByMemberId(memberId);
+    }
+
+    public ProjectResult getProjectResult(Long projectId, ProjectExecute projectExecute) {
+        ProjectResult pr;
+        try {
+            pr = FileExecute.executeFile(projectExecute.getCode(), projectExecute.getLanguage());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return pr;
     }
 }

@@ -263,9 +263,9 @@ class ProjectTest {
                         "int main(int argc, char const *argv[])\n" +
                         "{\n" +
                         "    cout << \"input numbers\" << endl;\n" +
-                        "    int x;\n" +
-                        "    cin >> x;\n" +
-                        "    cout << \"hello : \" << x << endl;\n" +
+//                        "    int x;\n" +
+//                        "    cin >> x;\n" +
+//                        "    cout << \"hello : \" << x << endl;\n" +
                         "    return 0;\n" +
                         "}";
 

@@ -1,9 +1,6 @@
 package goorm.woowa.webide.project.controller;
 
-import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
-import goorm.woowa.webide.project.domain.dto.ProjectCreate;
-import goorm.woowa.webide.project.domain.dto.ProjectExecute;
-import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.domain.dto.*;
 import goorm.woowa.webide.project.repository.dto.ProjectDetails;
 import goorm.woowa.webide.project.repository.dto.ProjectListResponse;
 import goorm.woowa.webide.project.service.ProjectQueryService;
@@ -65,8 +62,9 @@ public class ProjectController {
     }
 
     @PostMapping("/projects/{id}/result")
-    public ResponseEntity<String> getResult(@PathVariable("id") Long id,
+    public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
                                             @RequestBody ProjectExecute projectExecute) {
-        return ResponseEntity.ok("");
+
+        return ResponseEntity.ok(projectReadService.getProjectResult(id, projectExecute));
     }
 }
