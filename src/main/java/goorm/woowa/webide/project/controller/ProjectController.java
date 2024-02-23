@@ -64,7 +64,14 @@ public class ProjectController {
     @PostMapping("/ide/{id}/result")
     public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
                                             @RequestBody ProjectExecute projectExecute) {
-
+        projectQueryService.saveCode(id, projectExecute);
         return ResponseEntity.ok(projectReadService.getProjectResult(id, projectExecute));
+    }
+
+    @PatchMapping("/ide/{id}/save")
+    public ResponseEntity<Long> saveCode(@PathVariable("id") Long id,
+                                            @RequestBody ProjectExecute projectExecute) {
+
+        return ResponseEntity.ok(projectQueryService.saveCode(id, projectExecute));
     }
 }
