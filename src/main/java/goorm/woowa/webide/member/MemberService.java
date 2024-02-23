@@ -46,8 +46,8 @@ public class MemberService {
         return MemberDto.from(socialMember);
     }
 
-    public MemberDto getGoogleMember(String accessToken, String scope) {
-        Map<String, String> memberInfoFromGoogle = getMemberInfoFromGoogleAccessToken(accessToken, scope);
+    public MemberDto getGoogleMember(String accessToken) {
+        Map<String, String> memberInfoFromGoogle = getMemberInfoFromGoogleAccessToken(accessToken);
 
         // 1. db에 회원 정보 있는지 확인
         Optional<Member> byEmail = memberRepository.findByEmail(memberInfoFromGoogle.get("email"));
@@ -155,7 +155,7 @@ public class MemberService {
         return kakaoAccount;
     }
 
-    private Map<String, String> getMemberInfoFromGoogleAccessToken(String accessToken, String scope) {
+    private Map<String, String> getMemberInfoFromGoogleAccessToken(String accessToken) {
         String googleGetUserURL = "https://www.googleapis.com/userinfo/v2/me";
 
         RestTemplate restTemplate = new RestTemplate();

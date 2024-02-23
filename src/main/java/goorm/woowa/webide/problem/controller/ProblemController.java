@@ -19,4 +19,6 @@ public class ProblemController {
     public ResponseEntity<List<ProblemListResponse>> getTitleList() {
         return ResponseEntity.ok(problemReadService.getTitleList());
     }
+
+
 }

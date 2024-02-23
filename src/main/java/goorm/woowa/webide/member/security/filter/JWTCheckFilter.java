@@ -46,22 +46,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             log.info("request={}", request.getRequestURI());
             log.info("claims={}", claims);
 
-//            String email = (String) claims.get("email");
-//            String pw = (String) claims.get("pw");
-//            String nickname = (String) claims.get("nickname");
-//            List<String> roleNames = (List<String>) claims.get("roleNames");
-//
-//            MemberDto memberDto = new MemberDto( email, pw, nickname, roleNames);
-//
-//            log.info("-----------------------------------");
-//            log.info("memberDto={}", memberDto);
-//            log.info("memberDto.getAuthorities()={}", memberDto.getAuthorities());
-//
-//            UsernamePasswordAuthenticationToken authenticationToken
-//                    = new UsernamePasswordAuthenticationToken(memberDto, pw, memberDto.getAuthorities());
-//
-//            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error("jwt check error={}", e.getMessage());
