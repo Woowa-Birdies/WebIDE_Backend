@@ -51,7 +51,7 @@ public class ProjectReadService {
         ProjectResult projectResult;
         Project project = getById(projectId);
         try {
-            projectResult = FileExecute.executeFile(projectExecute.getCode(), projectExecute.getLanguage());
+            projectResult = FileExecute.executeFile(projectId, projectExecute.getCode(), projectExecute.getLanguage());
             project.saveCodeAndLanguage(projectExecute.getCode(), projectExecute.getLanguage());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
