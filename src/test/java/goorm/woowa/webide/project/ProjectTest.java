@@ -13,7 +13,6 @@ import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
-import goorm.woowa.webide.project.service.FileExecute;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +27,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static goorm.woowa.webide.project.domain.ProjectLanguage.CPP;
+import static goorm.woowa.webide.project.domain.ProjectLanguage.PYTHON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -241,9 +237,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -255,10 +248,10 @@ class ProjectTest {
         String pythonCode = "print('hello')\\nprint('hello')";
         String javaCode =
                 "public class Test {\\n" +
-                "   public static void main(String[] args) {" +
-                "       System.out.println(\"hello\");" +
-                "   }" +
-                "\n}";
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
         String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
@@ -288,7 +281,7 @@ class ProjectTest {
                 .data(json)
                 .build();
 
-        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode +"\"}";
+        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode + "\"}";
 
         // then
         mockMvc.perform(post("/ide/{id}/result", projectId)
@@ -314,9 +307,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -328,10 +318,10 @@ class ProjectTest {
         String pythonCode = "print('hello')";
         String javaCode =
                 "public class Test {\n" +
-                "   public static void main(String[] args) {" +
-                "       System.out.println(\"hello\");" +
-                "   }" +
-                "\n}";
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
         String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
@@ -352,7 +342,7 @@ class ProjectTest {
                 .build();
 
         // when
-        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode +"\"}";
+        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode + "\"}";
 
         // then
         mockMvc.perform(patch("/ide/{id}/save", projectId)
