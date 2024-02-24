@@ -1,16 +1,20 @@
 package goorm.woowa.webide.project.domain.dto;
 
 import goorm.woowa.webide.project.domain.ProjectLanguage;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProjectExecute {
-    @NonNull
+    @NotNull
     private ProjectLanguage language;
-    @NonNull
+    @NotNull
     private String code;
 
 }

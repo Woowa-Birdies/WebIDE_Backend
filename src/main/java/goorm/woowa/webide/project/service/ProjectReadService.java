@@ -48,15 +48,15 @@ public class ProjectReadService {
     }
 
     public ProjectResult getProjectResult(Long projectId, ProjectExecute projectExecute) {
-        ProjectResult pr;
-        ProjectDetails project = projectRepository.findProjectDetailsById(projectId)
-                .orElseThrow(() -> new NoSuchElementException("해당 Id에 Project를 찾을 수 없습니다."));
+        ProjectResult projectResult;
+        Project project = getById(projectId);
         try {
-            pr = FileExecute.executeFile(projectExecute.getCode(), projectExecute.getLanguage());
+            projectResult = FileExecute.executeFile(projectId, projectExecute.getCode(), projectExecute.getLanguage());
+            project.saveCodeAndLanguage(projectExecute.getCode(), projectExecute.getLanguage());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        return pr;
+        return projectResult;
     }
 }

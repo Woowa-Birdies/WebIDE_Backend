@@ -1,7 +1,6 @@
 package goorm.woowa.webide.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import goorm.woowa.webide.common.TestSecurityConfig;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
@@ -13,7 +12,6 @@ import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
-import goorm.woowa.webide.project.service.FileExecute;
 import goorm.woowa.webide.project.service.ProjectQueryService;
 import goorm.woowa.webide.project.service.ProjectReadService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +26,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static goorm.woowa.webide.project.domain.ProjectLanguage.CPP;
+import static goorm.woowa.webide.project.domain.ProjectLanguage.PYTHON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -241,9 +234,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -252,13 +242,13 @@ class ProjectTest {
                 .problemId(problem.getId())
                 .build());
 
-        String pythonCode = "print('hello')\\nprint('hello')";
+        String pythonCode = "print('hello')\nprint('hello')";
         String javaCode =
                 "public class Test {\\n" +
-                "   public static void main(String[] args) {" +
-                "       System.out.println(\"hello\");" +
-                "   }" +
-                "\n}";
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
         String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
@@ -273,32 +263,27 @@ class ProjectTest {
                         "}";
 
         // when
-//        FileExecute.executeFile(cppCode, CPP);
 
-        String result = "{\"status\":\"executed\",\"data\":\"{\\\"1\\\":\\\"hello\\\",\\\"2\\\":\\\"hello\\\"}\"}";
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1, "hello");
-        map.put(2, "hello");
-
-        Gson gson = new Gson();
-        String json = gson.toJson(map);
+        ProjectExecute projectExecute = ProjectExecute.builder()
+                .language(PYTHON)
+                .code(pythonCode)
+                .build();
 
         ProjectResult expectedResult = ProjectResult.builder()
                 .status("executed")
-                .data(json)
+                .data("hello\nhello")
                 .build();
-
-        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode +"\"}";
 
         // then
         mockMvc.perform(post("/ide/{id}/result", projectId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         //json 형식으로 데이터를 보낸다고 명시
-                        .content(input)
+                        .content(objectMapper.writeValueAsString(projectExecute))
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string(result));
+                .andExpect(jsonPath("$.status").value("executed"))
+                .andExpect(jsonPath("$.data").value(expectedResult.getData()));
     }
 
 
@@ -314,9 +299,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -328,10 +310,10 @@ class ProjectTest {
         String pythonCode = "print('hello')";
         String javaCode =
                 "public class Test {\n" +
-                "   public static void main(String[] args) {" +
-                "       System.out.println(\"hello\");" +
-                "   }" +
-                "\n}";
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
         String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
@@ -352,14 +334,13 @@ class ProjectTest {
                 .build();
 
         // when
-        String input = "{\"language\": \"python\", \"code\": \"" + pythonCode +"\"}";
 
         // then
         mockMvc.perform(patch("/ide/{id}/save", projectId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         //json 형식으로 데이터를 보낸다고 명시
-                        .content(input)
+                        .content(objectMapper.writeValueAsString(projectExecute))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().string(projectId.toString()));
