@@ -23,7 +23,7 @@ public class CandidateQueryService {
         Candidate candidate = candidateRepository.save(Candidate.toEntity(candidateCreate));
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NoSuchElementException("해당 Id에 Project를 찾을 수 없습니다."));
-
+        project.registerLanguage(candidateCreate.getLanguage());
         project.registerCandidate(candidate);
         return candidate.getId();
     }

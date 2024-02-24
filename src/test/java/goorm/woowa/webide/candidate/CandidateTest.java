@@ -12,6 +12,7 @@ import goorm.woowa.webide.member.data.MemberRole;
 import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
 import goorm.woowa.webide.project.domain.Project;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,7 @@ public class CandidateTest {
         CandidateCreate createTest = CandidateCreate.builder()
                 .candidateName("candidate")
                 .birthDate(LocalDateTime.now())
+                .language(ProjectLanguage.JAVA)
                 .build();
 
         //when
@@ -89,5 +91,6 @@ public class CandidateTest {
         Project project1 = projectRepository.findById(project.getId()).orElseThrow(() -> new NoSuchElementException("그런 Project 없습니다."));
         Candidate candidate = candidateRepository.findById(project1.getCandidateId()).orElseThrow(() -> new NoSuchElementException("그런 응시자 없습니다."));
         assertThat(project1.getCandidateId()).isEqualTo(candidate.getId());
+        assertThat(project1.getLanguage()).isEqualTo(ProjectLanguage.JAVA);
     }
 }
