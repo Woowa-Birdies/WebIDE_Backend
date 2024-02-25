@@ -26,7 +26,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/member/kakao") || path.startsWith("/api/member/google") || path.startsWith("/api/member/refresh")) {
+        if (path.startsWith("/api/member/kakao") || path.startsWith("/api/member/google") || path.startsWith("/api/member/refresh") || path.startsWith("/ws")) {
             return true;
         }
 
@@ -35,12 +35,13 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String authHeaderStr = request.getHeader("Authorization");
+        System.out.println("헤더에서 : " + authHeaderStr);
         try {
             //Bearer //7 jwt문자열
             //Bearer accestoken...
             String accessToken = authHeaderStr.substring(7);
+            System.out.println("토큰:"+accessToken);
             Map<String, Object> claims = JWTUtil.validateToken(accessToken);
 
             log.info("request={}", request.getRequestURI());
@@ -63,6 +64,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 //            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             filterChain.doFilter(request, response);
+            System.out.println("테스트 성공");
         } catch (Exception e) {
             log.error("jwt check error={}", e.getMessage());
 
