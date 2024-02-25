@@ -27,8 +27,7 @@ public class Member {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private List<MemberRole> roleList = new ArrayList<>();
-    // 프로젝트 연관관계 매핑
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Project> projects = new ArrayList<>();
 
     public void addRole(MemberRole role) {

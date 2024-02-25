@@ -38,6 +38,9 @@ public class Project extends BaseTimeEntity {
     private ProjectLanguage language;
 
     @Column(length = 128)
+    private String efsAccessId;
+
+    @Column(length = 128)
     private String ecsInfo;
 
     @Column(columnDefinition = "text")
@@ -72,4 +75,11 @@ public class Project extends BaseTimeEntity {
     public void registerLanguage(ProjectLanguage language) {
         this.language = language;
     }
+
+    public void saveCodeAndLanguage(String code, ProjectLanguage language) {
+        this.code = code;
+        this.language = language;
+    }
+
+    public void registerEFSAccessPoint(String efsAccess) { this.efsAccessId = efsAccess; }
 }

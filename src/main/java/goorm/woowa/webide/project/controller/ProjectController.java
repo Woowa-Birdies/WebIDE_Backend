@@ -1,8 +1,6 @@
 package goorm.woowa.webide.project.controller;
 
-import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
-import goorm.woowa.webide.project.domain.dto.ProjectCreate;
-import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.domain.dto.*;
 import goorm.woowa.webide.project.repository.dto.ProjectDetails;
 import goorm.woowa.webide.project.repository.dto.ProjectListResponse;
 import goorm.woowa.webide.project.service.ProjectQueryService;
@@ -27,9 +25,17 @@ public class ProjectController {
         return ResponseEntity.ok(projectReadService.getListByMemberId(memberId));
     }
 
-    @GetMapping("/ide/{id}")
-    public ResponseEntity<ProjectDetails> getById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(projectReadService.getByIdDetails(id));
+    @GetMapping("/ide/{memberId}/{projectId}/{hash}")
+    public ResponseEntity<ProjectDetails> getById(@PathVariable("memberId") Long memberId,
+                                                  @PathVariable("projectId") Long projectId,
+                                                  @PathVariable(value = "hash") String hash) {
+        return ResponseEntity.ok(projectReadService.getByIdDetails(memberId, projectId, hash));
+    }
+
+    @GetMapping("/ide/{memberId}/{projectId}")
+    public ResponseEntity<ProjectDetails> getById(@PathVariable("memberId") Long memberId,
+                                                  @PathVariable("projectId") Long projectId) {
+        return ResponseEntity.ok(projectReadService.getByIdDetails(memberId, projectId, null));
     }
 
     @PostMapping("/projects")
@@ -52,5 +58,17 @@ public class ProjectController {
     public ResponseEntity<Long> registerLanguage(@PathVariable("id") Long id,
                                                  @RequestBody LanguageUpdate languageUpdate) {
         return ResponseEntity.ok(projectQueryService.registerLanguage(id, languageUpdate));
+    }
+
+    @PostMapping("/ide/{id}/result")
+    public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
+                                                   @RequestBody ProjectExecute projectExecute) {
+        return ResponseEntity.ok(projectReadService.getProjectResult(id, projectExecute));
+    }
+
+    @PatchMapping("/ide/{id}/save")
+    public ResponseEntity<Long> saveCode(@PathVariable("id") Long id,
+                                         @RequestBody ProjectExecute projectExecute) {
+        return ResponseEntity.ok(projectQueryService.saveCode(id, projectExecute));
     }
 }

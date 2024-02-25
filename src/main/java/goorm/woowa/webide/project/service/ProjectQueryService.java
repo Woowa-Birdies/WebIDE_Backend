@@ -3,10 +3,13 @@ package goorm.woowa.webide.project.service;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.Project;
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
+import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import goorm.woowa.webide.project.repository.ProjectRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class ProjectQueryService {
@@ -22,13 +26,19 @@ public class ProjectQueryService {
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
 
+//    private final EfsUseCase efsService;
+
     public Long create(ProjectCreate projectCreate) {
         Member member = memberRepository
                 .findById(projectCreate.getMemberId())
                 .orElseThrow(() -> new NoSuchElementException("해당 Id에 해당하는 Member를 찾을 수 없습니다."));
+        Project project = projectRepository
+                .save(Project.toEntity(projectCreate, member, UUID.randomUUID().toString()));
 
-        return projectRepository
-                .save(Project.toEntity(projectCreate, member, UUID.randomUUID().toString())).getId();
+        //TODO: EFS
+//        String efsAccessPoint = efsService.createEFSAccessPoint(String.valueOf(project.getId()));
+//        project.registerEFSAccessPoint(efsAccessPoint);
+        return project.getId();
     }
 
     public Long update(ProjectUpdate projectUpdate) {
@@ -48,6 +58,13 @@ public class ProjectQueryService {
     public Long delete(Long id) {
         Project project = projectReadService.getById(id);
         projectRepository.deleteById(id);
+        return project.getId();
+    }
+
+    public Long saveCode(Long projectId, ProjectExecute projectExecute) {
+        Project project = projectReadService.getById(projectId);
+        project.saveCodeAndLanguage(projectExecute.getCode(), projectExecute.getLanguage());
+
         return project.getId();
     }
 

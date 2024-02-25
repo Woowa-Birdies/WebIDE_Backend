@@ -1,5 +1,6 @@
 package goorm.woowa.webide.candidate.domain;
 
+import goorm.woowa.webide.project.domain.ProjectLanguage;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,7 @@ public class CandidateCreate {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime birthDate;
 
+    @NotNull
+    private ProjectLanguage language;
 
 }

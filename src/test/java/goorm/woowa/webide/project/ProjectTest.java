@@ -8,8 +8,13 @@ import goorm.woowa.webide.member.data.MemberRole;
 import goorm.woowa.webide.problem.domain.Problem;
 import goorm.woowa.webide.problem.repository.ProblemRepository;
 import goorm.woowa.webide.project.domain.dto.ProjectCreate;
+import goorm.woowa.webide.project.domain.dto.ProjectExecute;
+import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.service.ProjectQueryService;
+import goorm.woowa.webide.project.service.ProjectReadService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +28,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static goorm.woowa.webide.project.domain.ProjectLanguage.PYTHON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestSecurityConfig.class)
@@ -35,14 +42,28 @@ class ProjectTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private ProjectQueryService projectQueryService;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private ProblemRepository problemRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectReadService projectReadService;
+    @Autowired
+    private ProjectQueryService projectQueryService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+//    @BeforeEach
+//    void setUp() {
+//        projectQueryService = ProjectQueryService.builder()
+//                .efsService(new TestEfsService())
+//                .projectRepository(projectRepository)
+//                .memberRepository(memberRepository)
+//                .projectReadService(projectReadService)
+//                .build();
+//    }
 
     @Test
     @DisplayName("사용자는 프로젝트를 상세조회할 수 있다")
@@ -57,11 +78,7 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
-
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
                 .name("CreateTest")
@@ -70,15 +87,12 @@ class ProjectTest {
                 .build());
         //when
         //then
-        mockMvc.perform(get("/ide/{id}", projectId).with(csrf()))
+        mockMvc.perform(get("/ide/{memberId}/{projectId}", member.getId(), projectId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectId").isNumber())
                 .andExpect(jsonPath("$.projectName").value("CreateTest"))
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.outputValue").value("output"))
-                .andExpect(jsonPath("$.inputValue").value("input"))
-                .andExpect(jsonPath("$.memberName").value("nickname"))
-                .andExpect(jsonPath("$.parameter").value("parameter"));
+                .andExpect(jsonPath("$.memberName").value("nickname"));
     }
 
 
@@ -94,9 +108,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
 
@@ -120,7 +131,6 @@ class ProjectTest {
                 .andExpect(jsonPath("$[0].candidateName").isEmpty())
                 .andExpect(jsonPath("$[0].problemTitle").value("title"))
                 .andExpect(jsonPath("$[0].keyHash").isNotEmpty());
-
     }
 
     @Test
@@ -128,6 +138,7 @@ class ProjectTest {
     @WithMockUser(username = "test", roles = "USER")
     void 사용자는_프로젝트를_만들_수_있다() throws Exception {
         //given
+
         Member member = memberRepository.save(Member.builder()
                 .email("email")
                 .pwd("pwd")
@@ -136,9 +147,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         ProjectCreate createTest = ProjectCreate.builder()
@@ -167,9 +175,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -202,9 +207,6 @@ class ProjectTest {
                 .build());
         Problem problem = problemRepository.save(Problem.builder()
                 .title("title")
-                .outputValue("output")
-                .inputValue("input")
-                .parameter("parameter")
                 .build());
 
         Long projectId = projectQueryService.create(ProjectCreate.builder()
@@ -215,6 +217,131 @@ class ProjectTest {
         //when
         //then
         mockMvc.perform(delete("/projects/{id}", projectId).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(projectId.toString()));
+    }
+
+
+    @Test
+    @DisplayName("사용자는 프로젝트를 실행시킬 수 있다.")
+    @WithMockUser(username = "test", roles = "USER")
+    void 사용자는_프로젝트를_실행시킬_수_있다() throws Exception {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .build());
+
+        Long projectId = projectQueryService.create(ProjectCreate.builder()
+                .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
+                .build());
+
+        String pythonCode = "print('hello')\nprint('hello')";
+        String javaCode =
+                "public class Test {\\n" +
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
+        String cppCode =
+                "#include <iostream>\n" +
+                        "\n" +
+                        "using namespace std;\n" +
+                        "\n" +
+                        "int main(int argc, char const *argv[])\n" +
+                        "{\n" +
+                        "    cout << \"input numbers\" << endl;\n " +
+                        "   for (int i = 0; i < argc; i++) {" +
+                        "       cout << argv[i] << endl;" +
+                        "    return 0;\n" +
+                        "}";
+
+        // when
+
+        ProjectExecute projectExecute = ProjectExecute.builder()
+                .language(PYTHON)
+                .code(pythonCode)
+                .build();
+
+        ProjectResult expectedResult = ProjectResult.builder()
+                .status("executed")
+                .data("hello\nhello")
+                .build();
+
+        // then
+        mockMvc.perform(post("/ide/{id}/result", projectId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        //json 형식으로 데이터를 보낸다고 명시
+                        .content(objectMapper.writeValueAsString(projectExecute))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("executed"))
+                .andExpect(jsonPath("$.data").value(expectedResult.getData()));
+    }
+
+
+    @Test
+    @DisplayName("사용자는 프로젝트를 저장할 수 있다.")
+    @WithMockUser(username = "test", roles = "USER")
+    void 사용자는_프로젝트를_저장할_수_있다() throws Exception {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .email("email")
+                .pwd("pwd")
+                .nickname("nickname")
+                .build());
+        Problem problem = problemRepository.save(Problem.builder()
+                .title("title")
+                .build());
+
+        Long projectId = projectQueryService.create(ProjectCreate.builder()
+                .name("CreateTest")
+                .memberId(member.getId())
+                .problemId(problem.getId())
+                .build());
+
+        String pythonCode = "print('hello')";
+        String javaCode =
+                "public class Test {\n" +
+                        "   public static void main(String[] args) {" +
+                        "       System.out.println(\"hello\");" +
+                        "   }" +
+                        "\n}";
+        String cppCode =
+                "#include <iostream>\n" +
+                        "\n" +
+                        "using namespace std;\n" +
+                        "\n" +
+                        "int main(int argc, char const *argv[])\n" +
+                        "{\n" +
+                        "    cout << \"input numbers\" << endl;\n" +
+//                        "    int x;\n" +
+//                        "    cin >> x;\n" +
+//                        "    cout << \"hello : \" << x << endl;\n" +
+                        "    return 0;\n" +
+                        "}";
+
+        ProjectExecute projectExecute = ProjectExecute.builder()
+                .language(PYTHON)
+                .code(pythonCode)
+                .build();
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/ide/{id}/save", projectId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        //json 형식으로 데이터를 보낸다고 명시
+                        .content(objectMapper.writeValueAsString(projectExecute))
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().string(projectId.toString()));
     }
