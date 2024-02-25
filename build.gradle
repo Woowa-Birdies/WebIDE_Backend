@@ -52,6 +52,7 @@ dependencies {
 
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
+    compileOnly 'com.mysql:mysql-connector-j'
 
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
