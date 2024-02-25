@@ -68,7 +68,7 @@ public class ProjectController {
 
     @PatchMapping("/ide/{id}/save")
     public ResponseEntity<Long> saveCode(@PathVariable("id") Long id,
-                                         @RequestBody ProjectExecute projectExecute) {
+                                         @Valid @RequestBody ProjectExecute projectExecute) {
         return ResponseEntity.ok(projectQueryService.saveCode(id, projectExecute));
     }
 }
