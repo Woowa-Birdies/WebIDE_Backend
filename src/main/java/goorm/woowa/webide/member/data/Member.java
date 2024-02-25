@@ -28,7 +28,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private List<MemberRole> roleList = new ArrayList<>();
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    @Builder.Default
+    @Builder.Default 
     private List<Project> projects = new ArrayList<>();
 
     public void addRole(MemberRole role) {
