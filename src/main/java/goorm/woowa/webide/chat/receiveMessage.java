@@ -11,6 +11,7 @@ public class receiveMessage {
     }
 
     public String getMessage() {
+        System.out.println();
         return message;
     }
 
