@@ -1,18 +1,14 @@
 package goorm.woowa.webide.project.service;
 
-import com.google.gson.Gson;
 import goorm.woowa.webide.project.domain.Project;
-import goorm.woowa.webide.project.domain.dto.ProjectExecute;
 import goorm.woowa.webide.project.domain.dto.ProjectResult;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import goorm.woowa.webide.project.repository.dto.ProjectDetails;
 import goorm.woowa.webide.project.repository.dto.ProjectListResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
