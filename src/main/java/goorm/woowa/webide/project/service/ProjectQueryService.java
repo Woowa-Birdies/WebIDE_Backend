@@ -1,19 +1,19 @@
 package goorm.woowa.webide.project.service;
 
+import com.google.gson.Gson;
 import goorm.woowa.webide.member.MemberRepository;
 import goorm.woowa.webide.member.data.Member;
 import goorm.woowa.webide.project.domain.Project;
 import goorm.woowa.webide.project.domain.ProjectLanguage;
-import goorm.woowa.webide.project.domain.dto.LanguageUpdate;
-import goorm.woowa.webide.project.domain.dto.ProjectCreate;
-import goorm.woowa.webide.project.domain.dto.ProjectExecute;
-import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
+import goorm.woowa.webide.project.domain.dto.*;
 import goorm.woowa.webide.project.repository.ProjectRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -68,4 +68,17 @@ public class ProjectQueryService {
         return project.getId();
     }
 
+    public ProjectResult getProjectResult(Long projectId, ProjectExecute projectExecute) {
+        ProjectResult projectResult;
+        Project project = projectReadService.getById(projectId);
+        Gson gson = new Gson();
+        try {
+            projectResult = FileExecute.executeFile(projectId, projectExecute.getCode(), projectExecute.getLanguage());
+            project.saveResult(projectExecute.getCode(), projectExecute.getLanguage(), gson.toJson(projectResult));
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return projectResult;
+    }
 }
