@@ -63,6 +63,7 @@ public class ProjectController {
     @PostMapping("/ide/{id}/result")
     public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
                                                    @Valid @RequestBody ProjectExecute projectExecute) {
+
         return ResponseEntity.ok(projectQueryService.getProjectResult(id, projectExecute));
     }
 
