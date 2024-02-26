@@ -56,19 +56,19 @@ public class ProjectController {
 
     @PatchMapping("/projects/{id}/languages")
     public ResponseEntity<Long> registerLanguage(@PathVariable("id") Long id,
-                                                 @RequestBody LanguageUpdate languageUpdate) {
+                                                 @Valid @RequestBody LanguageUpdate languageUpdate) {
         return ResponseEntity.ok(projectQueryService.registerLanguage(id, languageUpdate));
     }
 
     @PostMapping("/ide/{id}/result")
     public ResponseEntity<ProjectResult> getResult(@PathVariable("id") Long id,
-                                                   @RequestBody ProjectExecute projectExecute) {
+                                                   @Valid @RequestBody ProjectExecute projectExecute) {
         return ResponseEntity.ok(projectReadService.getProjectResult(id, projectExecute));
     }
 
     @PatchMapping("/ide/{id}/save")
     public ResponseEntity<Long> saveCode(@PathVariable("id") Long id,
-                                         @RequestBody ProjectExecute projectExecute) {
+                                         @Valid @RequestBody ProjectExecute projectExecute) {
         return ResponseEntity.ok(projectQueryService.saveCode(id, projectExecute));
     }
 }
