@@ -1,14 +1,12 @@
 package goorm.woowa.webide.project.domain.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class ProjectResult {
     @NotNull
     private String status;

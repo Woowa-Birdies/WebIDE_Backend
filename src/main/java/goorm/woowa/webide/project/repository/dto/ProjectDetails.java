@@ -19,6 +19,7 @@ public class ProjectDetails {
     private String projectName;
     private ProjectLanguage language;
     private String code;
+    private String result;
     private String keyHash;
     private String problem;
     private String title;

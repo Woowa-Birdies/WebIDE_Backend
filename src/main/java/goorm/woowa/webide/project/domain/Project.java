@@ -8,6 +8,7 @@ import goorm.woowa.webide.project.domain.dto.ProjectCreate;
 import goorm.woowa.webide.project.domain.dto.ProjectUpdate;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -47,6 +48,9 @@ public class Project extends BaseTimeEntity {
     private String code;
 
     @Column(columnDefinition = "text")
+    private String result;
+
+    @Column(columnDefinition = "text")
     private String keyHash;
 
     public Project(String name, Long problemId, Member member, String keyHash) {
@@ -79,6 +83,13 @@ public class Project extends BaseTimeEntity {
     public void saveCodeAndLanguage(String code, ProjectLanguage language) {
         this.code = code;
         this.language = language;
+    }
+
+    public void saveResult(String code, ProjectLanguage language, String result) {
+        this.code = code;
+        this.language = language;
+        this.result = result;
+
     }
 
     public void registerEFSAccessPoint(String efsAccess) { this.efsAccessId = efsAccess; }
