@@ -9,12 +9,12 @@ import lombok.*;
 @ToString
 public class ProjectResult {
     @NotNull
-    private String status;
+    private java.lang.String status;
     @NotNull
-    private String data;
+    private java.lang.String data;
 
     @Builder
-    public ProjectResult(String status, String data) {
+    public ProjectResult(java.lang.String status, java.lang.String data) {
         this.status = status;
         this.data = data;
     }

@@ -74,7 +74,7 @@ public class ProjectQueryService {
         Gson gson = new Gson();
         try {
             projectResult = FileExecute.executeFile(projectId, projectExecute.getCode(), projectExecute.getLanguage());
-            project.saveResult(projectExecute.getCode(), projectExecute.getLanguage(), gson.toJson(projectResult));
+            project.saveResult(projectExecute.getCode(), projectExecute.getLanguage(), projectResult.getData());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

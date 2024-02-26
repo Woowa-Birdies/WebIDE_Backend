@@ -242,14 +242,14 @@ class ProjectTest {
                 .problemId(problem.getId())
                 .build());
 
-        String pythonCode = "print('hello')\nprint('hello')";
-        String javaCode =
+        java.lang.String pythonCode = "print('hello')\nprint('hello')";
+        java.lang.String javaCode =
                 "public class Test {\\n" +
                         "   public static void main(String[] args) {" +
                         "       System.out.println(\"hello\");" +
                         "   }" +
                         "\n}";
-        String cppCode =
+        java.lang.String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
                         "using namespace std;\n" +
@@ -307,14 +307,14 @@ class ProjectTest {
                 .problemId(problem.getId())
                 .build());
 
-        String pythonCode = "print('hello')";
-        String javaCode =
+        java.lang.String pythonCode = "print('hello')";
+        java.lang.String javaCode =
                 "public class Test {\n" +
                         "   public static void main(String[] args) {" +
                         "       System.out.println(\"hello\");" +
                         "   }" +
                         "\n}";
-        String cppCode =
+        java.lang.String cppCode =
                 "#include <iostream>\n" +
                         "\n" +
                         "using namespace std;\n" +
