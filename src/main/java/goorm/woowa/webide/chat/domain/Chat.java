@@ -28,8 +28,6 @@ public class Chat {
     private String message;
     // 채팅 작성자
     private String sender;
-    // 채팅 읽은 유저 목록
-    private Map<String, Boolean> readUser;
 
     @CreatedDate
     private LocalDateTime createAt;
