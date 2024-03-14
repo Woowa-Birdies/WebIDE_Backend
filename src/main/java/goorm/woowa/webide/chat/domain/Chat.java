@@ -22,7 +22,7 @@ public class Chat {
     @Id
     @Field(value = "_id", targetType = FieldType.OBJECT_ID)
     private String messageId;
-
+    // 채팅방 아이디 = project id
     private Long roomId;
     // message 내용, 글자수 제한은 웹 소켓 컨테이너를 통해 설정
     private String message;
