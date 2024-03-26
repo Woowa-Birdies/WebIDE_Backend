@@ -49,6 +49,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
             System.out.println("테스트 성공");
+            
         } catch (Exception e) {
             log.error("jwt check error={}", e.getMessage());
 
