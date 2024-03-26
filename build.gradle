@@ -76,6 +76,7 @@ dependencies {
 
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'de.codecentric:spring-boot-admin-starter-client:3.2.3'
 }
 
 tasks.named('test') {
