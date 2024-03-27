@@ -43,6 +43,12 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeaderStr = request.getHeader("Authorization");
         System.out.println("헤더에서 : " + authHeaderStr);
+        log.info("request uri={}", request.getRequestURI());
+        log.info("request.getRemotePort ={}", request.getRemotePort());
+        log.info("request.getRemoteHost ={}", request.getRemoteHost());
+        log.info("request.getServerPort ={}", request.getServerPort());
+        log.info("request.getLocalPort ={}", request.getLocalPort());
+        
         try {
             //Bearer //7 jwt문자열
             //Bearer accestoken...
@@ -58,11 +64,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             
         } catch (Exception e) {
             log.error("jwt check error={}", e.getMessage());
-            log.info("request uri={}", request.getRequestURI());
-            log.info("request.getRemotePort ={}", request.getRemotePort());
-            log.info("request.getRemoteHost ={}", request.getRemoteHost());
-            log.info("request.getServerPort ={}", request.getServerPort());
-            log.info("request.getLocalPort ={}", request.getLocalPort());
 
             Gson errorResponse = new Gson();
             String msg = errorResponse.toJson(Map.of("error", "ERROR_ACCESS_TOKEN"));
